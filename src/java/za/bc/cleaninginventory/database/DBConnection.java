@@ -3,7 +3,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
 package za.bc.cleaninginventory.database;
-
+import java.sql.SQLException;
+import java.sql.DriverManager;
+import java.sql.Connection;
 /**
  *
  * @author BC-STUDENT
@@ -25,13 +27,13 @@ public class DBConnection {
         Connection con = null;
         try{
             con = DriverManager.getConnection(URL, user,password);
-            System.out.println("Connection successful: " + conn.getCatalog());
-        } catch (ClassNotFoundException | SQLException e) {
+            System.out.println("Connection successful: " + con.getCatalog());
+        } catch (SQLException e) {
             System.out.println("Connection failed:");
-            e.printStackTrace();
+            e.getMessage();
         }
+        return con;
     }
 
 
     }
-}
