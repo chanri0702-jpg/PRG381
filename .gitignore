@@ -14,3 +14,7 @@ nbproject/private/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Project Guide
+GUIDE.md
+SOLID_AND_SECURITY.md
