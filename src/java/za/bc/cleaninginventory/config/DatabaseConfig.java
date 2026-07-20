@@ -1,13 +1,16 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package za.bc.cleaninginventory.config;
 
-/**
- *
- * @author BC-STUDENT
- */
 public class DatabaseConfig {
-    
+
+    private DatabaseConfig() {
+        // Prevent instantiation
+        throw new UnsupportedOperationException("Utility class cannot be instantiated.");
+    }
+
+    public static final String URL = "";
+
+    public static final String USER = "";
+
+    public static final String PASS = "";
+
 }
