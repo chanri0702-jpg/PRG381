@@ -6,7 +6,7 @@ package za.bc.cleaninginventory.model.dao.cleaner;
 
 /**
  *
- * @author BC-STUDENT
+ * @author thabz
  */
 public class CleanerDAO {
     
