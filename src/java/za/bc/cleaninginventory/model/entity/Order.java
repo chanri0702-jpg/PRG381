@@ -4,47 +4,99 @@
  */
 package za.bc.cleaninginventory.model.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 /**
  *
  * @author chanr
  */
 public class Order {
-    private String orderID;
-    private String empID;
+    private int Id;
+    private int empID;
     private Date orderDate;
+    
+    //if joined with products (for webpage display)
+    private int prodID;
+    private String name; 
+    private int quantity;
+    private BigDecimal total;
+    
+    private List<Integer> reqIds;
+    private List<String> status;
     
     public Order(){}
     
-    public Order(String id, String emp, Date dt){
-        this.orderID = id;
-        this.empID = emp;
-        this.orderDate = dt;
+    public int getId() {
+        return Id;
     }
 
-    public String getOrderID() {
-        return orderID;
+    public void setId(int ordId) {
+        this.Id = ordId;
     }
 
-    public String getEmpID() {
+    public int getEmpID() {
         return empID;
+    }
+
+    public void setEmpID(int empId) {
+        this.empID = empId;
     }
 
     public Date getOrderDate() {
         return orderDate;
     }
 
-    public void setOrderID(String orderID) {
-        this.orderID = orderID;
+    public void setOrderDate(Date ordDate) {
+        this.orderDate = ordDate;
     }
 
-    public void setEmpID(String empID) {
-        this.empID = empID;
+    public int getProdID() {
+        return prodID;
     }
 
-    public void setOrderDate(Date orderDate) {
-        this.orderDate = orderDate;
+    public void setProdID(int prodId) {
+        this.prodID = prodId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String productName) {
+        this.name = productName;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public BigDecimal getTotal() {
+        return total;
+    }
+
+    public void setTotal(BigDecimal total) {
+        this.total = total;
+    }
+
+    public List<Integer> getReqIds() {
+        return reqIds;
+    }
+
+    public List<String> getStatus() {
+        return status;
+    }
+
+    public void setReqIds(List<Integer> reqIds) {
+        this.reqIds = reqIds;
+    }
+
+    public void setStatus(List<String> status) {
+        this.status = status;
     }
     
-
 }

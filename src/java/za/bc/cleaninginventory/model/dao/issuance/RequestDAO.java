@@ -21,8 +21,8 @@ public class RequestDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, r.getEmpID());
-            ps.setString(2, r.getProdID());
+            ps.setInt(1, r.getEmpID());
+            ps.setInt(2, r.getProdID());
             ps.setInt(3, r.getQuantity());
             ps.setString(4, r.getPriority());
             ps.setString(5, r.getDescription());
@@ -31,7 +31,7 @@ public class RequestDAO {
         }
     }
 
-    // All requests belonging to one employee, most recent first, with the product name joined in
+
     public List<Request> findByEmployee(int empId) throws SQLException {
         List<Request> requests = new ArrayList<>();
         String sql = "SELECT r.req_id, r.emp_id, r.prod_id, p.name AS product_name, "
@@ -55,7 +55,7 @@ public class RequestDAO {
         return requests;
     }
 
-    // Look up a single request by ID (used when loading the Edit form)
+
     public Request findById(int reqId) throws SQLException {
         String sql = "SELECT r.req_id, r.emp_id, r.prod_id, p.name AS product_name, "
                 + "r.quantity, r.status, r.priority, r.description, r.req_date "
@@ -74,11 +74,9 @@ public class RequestDAO {
                 }
             }
         }
-        return null; // not found
+        return null; 
     }
 
-    // Update a request. Only allowed if it belongs to this employee AND is still PENDING.
-    // Returns true if a row was actually updated.
     public boolean updateRequest(Request r) throws SQLException {
         String sql = "UPDATE requests SET prod_id = ?, quantity = ?, priority = ?, description = ? "
                 + "WHERE req_id = ? AND emp_id = ? AND status = 'PENDING'";
@@ -86,19 +84,17 @@ public class RequestDAO {
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, r.getProdID());
+            ps.setInt(1, r.getProdID());
             ps.setInt(2, r.getQuantity());
             ps.setString(3, r.getPriority());
             ps.setString(4, r.getDescription());
-            ps.setString(5, r.getId());
-            ps.setString(6, r.getEmpID());
+            ps.setInt(5, r.getId());
+            ps.setInt(6, r.getEmpID());
 
             return ps.executeUpdate() > 0;
         }
     }
 
-    // Delete a request. Only allowed if it belongs to this employee AND is still PENDING.
-    // Returns true if a row was actually deleted.
     public boolean deleteRequest(int reqId, int empId) throws SQLException {
         String sql = "DELETE FROM requests WHERE req_id = ? AND emp_id = ? AND status = 'PENDING'";
 
@@ -111,11 +107,61 @@ public class RequestDAO {
             return ps.executeUpdate() > 0;
         }
     }
+    
+    public List<Request> findAllPending() throws SQLException {
+        List<Request> requests = new ArrayList<>();
+        String sql = "SELECT r.req_id, r.emp_id, r.prod_id, p.name AS product_name, "
+                + "r.quantity, r.status, r.priority, r.description, r.req_date, "
+                + "e.name AS emp_name, e.surname AS emp_surname "
+                + "FROM requests r "
+                + "JOIN products p ON r.prod_id = p.prod_id "
+                + "JOIN employees e ON r.emp_id = e.emp_id "
+                + "WHERE r.status = 'PENDING' "
+                + "ORDER BY r.req_date ASC, r.req_id ASC";
 
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Request r = mapRow(rs);
+                r.setRequesterName(rs.getString("emp_name") + " " + rs.getString("emp_surname"));
+                requests.add(r);
+            }
+        }
+        return requests;
+    }
+    
+    public List<Request> findAllApproved() throws SQLException {
+        List<Request> requests = new ArrayList<>();
+        String sql = "SELECT r.req_id, r.emp_id, r.prod_id, p.name AS product_name, "
+                + "r.quantity, r.status, r.priority, r.description, r.req_date, "
+                + "e.name AS emp_name, e.surname AS emp_surname "
+                + "FROM requests r "
+                + "JOIN products p ON r.prod_id = p.prod_id "
+                + "JOIN employees e ON r.emp_id = e.emp_id "
+                + "WHERE r.status = 'APPROVED' "
+                + "ORDER BY r.req_date ASC, r.req_id ASC";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Request r = mapRow(rs);
+                r.setRequesterName(rs.getString("emp_name") + " " + rs.getString("emp_surname"));
+                requests.add(r);
+            }
+        }
+        return requests;
+    }
+    
     private Request mapRow(ResultSet rs) throws SQLException {
         Request r = new Request();
-        r.setEmpID("emp_id");
-        r.setProdID("prod_id");
+        r.setId(rs.getInt("req_id"));
+        r.setEmpID(rs.getInt("emp_id"));
+        r.setProdID(rs.getInt("prod_id"));
+        r.setName(rs.getString("product_name"));
         r.setQuantity(rs.getInt("quantity"));
         r.setStatus(rs.getString("status"));
         r.setPriority(rs.getString("priority"));

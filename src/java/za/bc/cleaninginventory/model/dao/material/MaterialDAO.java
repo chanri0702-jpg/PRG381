@@ -24,9 +24,10 @@ public class MaterialDAO {
 
             while (rs.next()) {
                 Product p = new Product();
-                p.setBussID(rs.getString("bus_id"));
+                p.setId(rs.getInt("prod_id"));
+                p.setBussID(rs.getInt("bus_id"));
                 p.setName(rs.getString("name"));
-                p.setPrice(rs.getFloat("price"));
+                p.setPrice(rs.getBigDecimal("price"));
                 p.setDescription(rs.getString("description"));
                 products.add(p);
             }
