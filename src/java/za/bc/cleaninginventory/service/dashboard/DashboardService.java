@@ -1,13 +1,18 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package za.bc.cleaninginventory.service.dashboard;
 
-/**
- *
- * @author BC-STUDENT
- */
+import za.bc.cleaninginventory.model.dao.dashboard.DashboardDAO;
+import za.bc.cleaninginventory.model.dto.DashboardDTO;
+import za.bc.cleaninginventory.model.dto.LowStockDTO;
+import za.bc.cleaninginventory.model.dto.RecentRequestDTO;
+
+import java.util.List;
+
 public class DashboardService {
-    
+
+    private final DashboardDAO dashboardDAO = new DashboardDAO();
+
+    public DashboardDTO getDashboardStatistics() {
+        return dashboardDAO.getDashboardStatistics();
+    }
+
 }
