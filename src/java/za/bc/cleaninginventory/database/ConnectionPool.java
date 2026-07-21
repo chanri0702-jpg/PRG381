@@ -22,12 +22,11 @@ public class ConnectionPool {
         config.setDriverClassName("org.postgresql.Driver");
 
         // Pool Configuration
-        config.setMaximumPoolSize(10);
-        config.setMinimumIdle(2);
-        config.setConnectionTimeout(30000);
-        config.setIdleTimeout(300000);
-        config.setMaxLifetime(1800000);
-
+        config.setMaximumPoolSize(3);
+        config.setMinimumIdle(1);
+        config.setConnectionTimeout(10000);
+        config.setIdleTimeout(60000);
+        config.setMaxLifetime(300000);
         // Optional (helps identify your app in PostgreSQL)
         config.setPoolName("CleaningInventoryPool");
         config.setAutoCommit(true);
