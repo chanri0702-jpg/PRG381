@@ -2,45 +2,41 @@ package za.bc.cleaninginventory.model.entity;
 
 public class Cleaner {
 
-    private int employeeId;
+    private int cleanerId;
     private String name;
     private String surname;
+    private String phone;
+    private String email;
     private int campusId;
     private String campusName;
-    private String role;
-    private String email;
-    private String phone;
-    private String password;
 
     public Cleaner() {
     }
 
     public Cleaner(
-            int employeeId,
+            int cleanerId,
             String name,
             String surname,
-            int campusId,
-            String campusName,
-            String role,
+            String phone,
             String email,
-            String phone
+            int campusId,
+            String campusName
     ) {
-        this.employeeId = employeeId;
+        this.cleanerId = cleanerId;
         this.name = name;
         this.surname = surname;
+        this.phone = phone;
+        this.email = email;
         this.campusId = campusId;
         this.campusName = campusName;
-        this.role = role;
-        this.email = email;
-        this.phone = phone;
     }
 
-    public int getEmployeeId() {
-        return employeeId;
+    public int getCleanerId() {
+        return cleanerId;
     }
 
-    public void setEmployeeId(int employeeId) {
-        this.employeeId = employeeId;
+    public void setCleanerId(int cleanerId) {
+        this.cleanerId = cleanerId;
     }
 
     public String getName() {
@@ -59,6 +55,22 @@ public class Cleaner {
         this.surname = surname;
     }
 
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
     public int getCampusId() {
         return campusId;
     }
@@ -75,35 +87,9 @@ public class Cleaner {
         this.campusName = campusName;
     }
 
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-    
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getPhone() {
-        return phone;
-    }
-
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public String getFullName() {
+        return (name == null ? "" : name)
+                + " "
+                + (surname == null ? "" : surname);
     }
 }
