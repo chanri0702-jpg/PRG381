@@ -14,6 +14,7 @@
     <meta charset="UTF-8">
 
     <title>Cleaners | Cleaning Inventory & Issuance System</title>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/cims_logo.png">
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">

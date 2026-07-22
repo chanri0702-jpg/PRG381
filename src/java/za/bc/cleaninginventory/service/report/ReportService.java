@@ -1,13 +1,41 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package za.bc.cleaninginventory.service.report;
 
-/**
- *
- * @author BC-STUDENT
- */
+import za.bc.cleaninginventory.model.dao.report.ReportDAO;
+import za.bc.cleaninginventory.model.dto.ReportDTO;
+
+import java.util.List;
+
 public class ReportService {
+
+    private final ReportDAO reportDAO = new ReportDAO();
+
+    public List<ReportDTO> getProductsReport() {
+
+        return reportDAO.getProductsReport();
+
+    }
+
+    public List<ReportDTO> getRequestsReport() {
+
+        return reportDAO.getRequestsReport();
+
+    }
     
+    public List<ReportDTO> getStockReport() {
+
+        return reportDAO.getStockReport();
+
+    }
+    
+    public List<ReportDTO> getSuppliersReport() {
+
+        return reportDAO.getSuppliersReport();
+
+    }
+    
+    public List<ReportDTO> getOrdersReport() {
+
+        return reportDAO.getOrdersReport();
+
+    }
 }

@@ -1,4 +1,29 @@
 /*==================================================
+                DASHBOARD LAYOUT
+==================================================*/
+
+.dashboard-content{
+
+    display:flex;
+
+    flex-direction:column;
+
+    flex:1;
+
+    min-height:0;
+
+    overflow:hidden;
+
+}
+
+.page-header,
+.cards{
+
+    flex-shrink:0;
+
+}
+
+/*==================================================
     DASHBOARD CARDS
 ==================================================*/
 
@@ -117,7 +142,42 @@
 
     gap:25px;
 
+    min-height:0;
+
 }
+
+.table-card{
+
+    display:flex;
+
+    flex-direction:column;
+
+    min-height:0;
+
+    max-height:100%;
+
+}
+
+.table-wrapper{
+
+    overflow-y:auto;
+
+    max-height:100%;
+
+}
+
+.table-wrapper thead th{
+
+    position:sticky;
+
+    top:0;
+
+    z-index:2;
+
+    background:var(--table-header);
+
+}
+
 
 
 

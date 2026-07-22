@@ -1,7 +1,28 @@
 /*==================================================
                     REPORTS PAGE
 ==================================================*/
+.page-header,
+.report-cards,
+.search-container{
 
+    flex-shrink:0;
+
+}
+
+
+.reports-content{
+
+    display:flex;
+
+    flex-direction:column;
+
+    flex:1;
+
+    min-height:0;
+
+    overflow:hidden;
+
+}
 
 .reports-header{
 
@@ -163,6 +184,14 @@
 
     padding:25px;
 
+    display:flex;
+
+    flex-direction:column;
+
+    min-height:0;
+
+    max-height:100%;
+
 }
 
 .table-card h2{
@@ -171,6 +200,25 @@
 
 }
 
+.table-wrapper{
+
+    overflow-y:auto;
+
+    max-height:100%;
+
+}
+
+table thead th{
+
+    position:sticky;
+
+    top:0;
+
+    background:var(--table-header);
+
+    z-index:2;
+
+}
 
 
 /*==================================================
