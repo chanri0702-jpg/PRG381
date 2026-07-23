@@ -8,29 +8,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-            --card-bg: rgba(30, 41, 59, 0.7);
-            --card-border: rgba(255, 255, 255, 0.08);
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --input-bg: rgba(15, 23, 42, 0.6);
-            --input-border: rgba(255, 255, 255, 0.1);
-            --input-focus: #818cf8;
-            --error-bg: rgba(239, 68, 68, 0.15);
-            --error-text: #fca5a5;
-            --error-border: rgba(239, 68, 68, 0.3);
-            --success-bg: rgba(34, 197, 94, 0.15);
-            --success-text: #86efac;
-            --success-border: rgba(34, 197, 94, 0.3);
+            --bg-gradient: #F8FAFC;
+            --card-bg: #FFFFFF;
+            --card-border: #E2E8F0;
+            --primary: #2563EB;
+            --primary-hover: #1D4ED8;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --input-bg: #FFFFFF;
+            --input-border: #E2E8F0;
+            --input-focus: #2563EB;
+            --error-bg: #FEE2E2;
+            --error-text: #B91C1C;
+            --error-border: #FECACA;
+            --success-bg: #DCFCE7;
+            --success-text: #15803D;
+            --success-border: #BBF7D0;
+            --shadow: 0 8px 24px rgba(15,23,42,.08);
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Poppins', 'Plus Jakarta Sans', sans-serif;
         }
 
         body {
@@ -42,7 +43,6 @@
             color: var(--text-main);
             overflow-x: hidden;
             position: relative;
-            padding: 40px 20px;
         }
 
         /* Abstract decorative background elements */
@@ -51,7 +51,7 @@
             position: absolute;
             width: 400px;
             height: 400px;
-            background: radial-gradient(circle, rgba(99, 102, 241, 0.15) 0%, rgba(0,0,0,0) 70%);
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.08) 0%, rgba(0,0,0,0) 70%);
             top: -100px;
             left: -100px;
             z-index: 0;
@@ -62,7 +62,7 @@
             position: absolute;
             width: 500px;
             height: 500px;
-            background: radial-gradient(circle, rgba(129, 140, 248, 0.1) 0%, rgba(0,0,0,0) 70%);
+            background: radial-gradient(circle, rgba(59, 130, 246, 0.05) 0%, rgba(0,0,0,0) 70%);
             bottom: -150px;
             right: -100px;
             z-index: 0;
@@ -98,7 +98,7 @@
             font-size: 28px;
             font-weight: 700;
             letter-spacing: -0.5px;
-            background: linear-gradient(to right, #e2e8f0, #94a3b8);
+            background: linear-gradient(to right, var(--primary), var(--primary-hover));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 8px;
