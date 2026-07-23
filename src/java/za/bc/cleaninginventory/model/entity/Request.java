@@ -4,7 +4,7 @@
  */
 package za.bc.cleaninginventory.model.entity;
 import java.util.Date;
-
+import java.math.BigDecimal;
 /**
  *
  * @author chanr
@@ -20,6 +20,11 @@ public class Request {
     private String priority;
     private String description;
     private Date reqDate;
+    private int busId;
+    private String businessName;
+    private BigDecimal price;
+
+    
 
     public Request(int empId, int prodId, int quantity, String priority, String description) {
         this.empID = empId;
@@ -108,5 +113,28 @@ public class Request {
 
     public void setRequesterName(String requesterName) {
         this.requesterName = requesterName;
+    }
+    public void setBusId(int busId) {
+        this.busId = busId;
+    }
+
+    public void setBusinessName(String businessName) {
+        this.businessName = businessName;
+    }
+
+    public void setPrice(BigDecimal price) {
+        this.price = price;
+    }
+
+    public int getBusId() {
+        return busId;
+    }
+
+    public String getBusinessName() {
+        return businessName;
+    }
+
+    public BigDecimal getPrice() {
+        return price;
     }
 }

@@ -4,8 +4,9 @@
  */
 package za.bc.cleaninginventory.model.dao.issuance;
 
-import za.bc.cleaninginventory.database.DBConnection;
+import za.bc.cleaninginventory.database.ConnectionPool;
 import za.bc.cleaninginventory.model.entity.Issuance;
+import za.bc.cleaninginventory.model.dto.ProductStockDTO;
 
 import java.sql.*;
 import java.util.ArrayList;
@@ -16,23 +17,12 @@ import java.util.List;
  * @author chanr
  */
 public class IssuanceDAO {
-    public IssueResult issueStock(int reqId, int prodId, int cleanerId, int quantity, int issuedByEmpId) throws SQLException {
+    public IssueResult issueStock(int prodId, int cleanerId, int quantity, int issuedByEmpId) throws SQLException {
         Connection conn = null;
 
         try {
-            conn = DBConnection.getConnection();
+            conn = ConnectionPool.getConnection();
             conn.setAutoCommit(false);
-
-            String checkSql = "SELECT status FROM requests WHERE req_id = ? FOR UPDATE";
-            try (PreparedStatement checkPs = conn.prepareStatement(checkSql)) {
-                checkPs.setInt(1, reqId);
-                try (ResultSet rs = checkPs.executeQuery()) {
-                    if (!rs.next() || !"APPROVED".equals(rs.getString("status"))) {
-                        conn.rollback();
-                        return IssueResult.NOT_APPROVED;
-                    }
-                }
-            }
 
             int campId;
             String campSql = "SELECT camp_id FROM cleaners WHERE cleaner_id = ?";
@@ -74,8 +64,7 @@ public class IssuanceDAO {
                 deductPs.executeUpdate();
             }
 
-            String issueSql = "INSERT INTO issuance (cleaner_id, prod_id, issued_by, quantity) "
-                    + "VALUES (?, ?, ?, ?, ?)";
+            String issueSql = "INSERT INTO issuance (cleaner_id, prod_id, issued_by, quantity) VALUES (?, ?, ?, ?)";
             try (PreparedStatement issuePs = conn.prepareStatement(issueSql)) {
                 issuePs.setInt(1, cleanerId);
                 issuePs.setInt(2, prodId);
@@ -89,11 +78,7 @@ public class IssuanceDAO {
 
         } catch (SQLException e) {
             if (conn != null) {
-                try {
-                    conn.rollback();
-                } catch (SQLException rollbackEx) {
-                    e.addSuppressed(rollbackEx);
-                }
+                try { conn.rollback(); } catch (SQLException rollbackEx) { e.addSuppressed(rollbackEx); }
             }
             throw e;
         } finally {
@@ -115,7 +100,7 @@ public class IssuanceDAO {
                 + "JOIN employees e ON i.issued_by = e.emp_id "
                 + "ORDER BY i.issue_date DESC";
 
-        try (Connection conn = DBConnection.getConnection();
+        try (Connection conn = ConnectionPool.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
 
@@ -128,20 +113,54 @@ public class IssuanceDAO {
                 i.setProductName(rs.getString("product_name"));
                 i.setIssuedBy(rs.getInt("issued_by"));
                 i.setIssuedByName(rs.getString("emp_name") + " " + rs.getString("emp_surname"));
-
-
                 i.setQuantity(rs.getInt("quantity"));
                 i.setIssueDate(rs.getTimestamp("issue_date"));
-
                 history.add(i);
             }
         }
         return history;
     }
 
+    public Integer getEmployeeCampId(int empId) throws SQLException {
+        String sql = "SELECT camp_id FROM employees WHERE emp_id = ?";
+        try (Connection conn = ConnectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, empId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    int campId = rs.getInt("camp_id");
+                    return rs.wasNull() ? null : campId;
+                }
+            }
+        }
+        return null;
+    }
+
+    /** Products currently in stock (>0) at the given campus, for the "issue stock" dropdown. */
+    public List<ProductStockDTO> getProductStockForCampus(int campId) throws SQLException {
+        List<ProductStockDTO> stockList = new ArrayList<>();
+        String sql = "SELECT ps.prod_id, p.name, ps.stock "
+                + "FROM product_stock ps JOIN products p ON ps.prod_id = p.prod_id "
+                + "WHERE ps.camp_id = ? AND ps.stock > 0 "
+                + "ORDER BY p.name";
+        try (Connection conn = ConnectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, campId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    stockList.add(new ProductStockDTO(
+                            rs.getInt("prod_id"),
+                            rs.getString("name"),
+                            rs.getInt("stock")
+                    ));
+                }
+            }
+        }
+        return stockList;
+    }
+
     public enum IssueResult {
         SUCCESS,
-        NOT_APPROVED,
         CLEANER_NOT_FOUND,
         INSUFFICIENT_STOCK
     }

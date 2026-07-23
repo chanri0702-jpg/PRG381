@@ -6,13 +6,10 @@ package za.bc.cleaninginventory.controller.issuance;
 
 import za.bc.cleaninginventory.model.dao.cleaner.CleanerDAO;
 import za.bc.cleaninginventory.model.dao.issuance.IssuanceDAO;
-import za.bc.cleaninginventory.model.dao.issuance.RequestDAO;
 import za.bc.cleaninginventory.model.entity.Cleaner;
 import za.bc.cleaninginventory.model.entity.Issuance;
-import za.bc.cleaninginventory.model.entity.Request;
+import za.bc.cleaninginventory.model.dto.ProductStockDTO;
 
-import java.io.IOException;
-import java.io.PrintWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -22,6 +19,7 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 /**
  *
@@ -30,7 +28,6 @@ import java.util.List;
 @WebServlet(name = "IssuanceServlet", urlPatterns = {"/issuance"})
 public class IssuanceServlet extends HttpServlet {
 
-   private final RequestDAO requestDAO = new RequestDAO();
     private final CleanerDAO cleanerDAO = new CleanerDAO();
     private final IssuanceDAO issuanceDAO = new IssuanceDAO();
 
@@ -39,35 +36,13 @@ public class IssuanceServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = req.getSession(false);
-        String employeeNumber = validateStorekeeperSession(session);
-        if (employeeNumber == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
-
-        moveFlashMessages(session, req);
-
-        try {
-            List<Request> approvedRequests = requestDAO.findAllApproved();
-            List<Cleaner> cleaners = cleanerDAO.getAllCleaners();
-            List<Issuance> issuanceHistory = issuanceDAO.getIssuanceHistory();
-
-            req.setAttribute("approvedRequests", approvedRequests);
-            req.setAttribute("cleaners", cleaners);
-            req.setAttribute("issuanceHistory", issuanceHistory);
-
-        } catch (SQLException e) {
-            req.setAttribute("errorMessage", "Database error: " + e.getMessage());
-        }
-
-        req.getRequestDispatcher("issuance.jsp").forward(req, resp);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
-            throws ServletException, IOException {
-
-        HttpSession session = req.getSession(false);
+        
+        //temp login details for testing
+        session = req.getSession(true);
+        session.setAttribute("employeeNumber", "100003");
+        session.setAttribute("role", "STOREKEEPER");
+        //REMOVE AFTER
+        
         String employeeNumber = validateStorekeeperSession(session);
         if (employeeNumber == null) {
             resp.sendRedirect("login.jsp");
@@ -75,20 +50,57 @@ public class IssuanceServlet extends HttpServlet {
         }
 
         int storekeeperEmpId = Integer.parseInt(employeeNumber);
+        moveFlashMessages(session, req);
 
-        String reqIdParam = req.getParameter("reqId");
+        try {
+            Integer campId = issuanceDAO.getEmployeeCampId(storekeeperEmpId);
+
+            List<Cleaner> cleaners = (campId != null) ? cleanerDAO.getCleanersByCampus(campId) : new ArrayList<>();
+            List<ProductStockDTO> availableStock = (campId != null) ? issuanceDAO.getProductStockForCampus(campId) : new ArrayList<>();
+            List<Issuance> issuanceHistory = issuanceDAO.getIssuanceHistory();
+
+            req.setAttribute("cleaners", cleaners);
+            req.setAttribute("availableStock", availableStock);
+            req.setAttribute("issuanceHistory", issuanceHistory);
+
+        } catch (SQLException e) {
+            req.setAttribute("errorMessage", "Database error: " + e.getMessage());
+        }
+
+        req.getRequestDispatcher("/issuance/issuance.jsp").forward(req, resp);
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        HttpSession session = req.getSession(false);
+        
+        //temp login details for testing
+        session = req.getSession(true);
+        session.setAttribute("employeeNumber", "100003");
+        session.setAttribute("role", "STOREKEEPER");
+        //REMOVE AFTER
+        
+        String employeeNumber = validateStorekeeperSession(session);
+        if (employeeNumber == null) {
+            resp.sendRedirect("login.jsp");
+            return;
+        }
+        
+        int storekeeperEmpId = Integer.parseInt(employeeNumber);
+        
         String prodIdParam = req.getParameter("prodId");
         String cleanerIdParam = req.getParameter("cleanerId");
         String quantityParam = req.getParameter("quantity");
 
-        if (isEmpty(reqIdParam) || isEmpty(prodIdParam) || isEmpty(cleanerIdParam) || isEmpty(quantityParam)) {
-            session.setAttribute("flashError", "Please select a cleaner and confirm the quantity.");
+        if (isEmpty(prodIdParam) || isEmpty(cleanerIdParam) || isEmpty(quantityParam)) {
+            session.setAttribute("flashError", "Please select a product, cleaner, and quantity.");
             resp.sendRedirect("issuance");
             return;
         }
 
         try {
-            int reqId = Integer.parseInt(reqIdParam);
             int prodId = Integer.parseInt(prodIdParam);
             int cleanerId = Integer.parseInt(cleanerIdParam);
             int quantity = Integer.parseInt(quantityParam);
@@ -99,20 +111,17 @@ public class IssuanceServlet extends HttpServlet {
                 return;
             }
 
-            IssuanceDAO.IssueResult result = issuanceDAO.issueStock(reqId, prodId, cleanerId, quantity, storekeeperEmpId);
+            IssuanceDAO.IssueResult result = issuanceDAO.issueStock(prodId, cleanerId, quantity, storekeeperEmpId);
 
             switch (result) {
                 case SUCCESS:
-                    session.setAttribute("flashSuccess", "Stock issued and request marked as issued.");
-                    break;
-                case NOT_APPROVED:
-                    session.setAttribute("flashError", "That request is no longer approved — it may have already been issued.");
+                    session.setAttribute("flashSuccess", "Stock issued successfully.");
                     break;
                 case CLEANER_NOT_FOUND:
                     session.setAttribute("flashError", "Selected cleaner could not be found.");
                     break;
                 case INSUFFICIENT_STOCK:
-                    session.setAttribute("flashError", "Not enough stock at this cleaner's campus to issue that quantity.");
+                    session.setAttribute("flashError", "Not enough stock at your campus to issue that quantity.");
                     break;
             }
 
@@ -125,7 +134,7 @@ public class IssuanceServlet extends HttpServlet {
         resp.sendRedirect("issuance");
     }
 
-    // Confirms there's a logged-in employee with STOREKEEPER role; returns their emp_id as a String, or null
+
     private String validateStorekeeperSession(HttpSession session) {
         if (session == null) return null;
 

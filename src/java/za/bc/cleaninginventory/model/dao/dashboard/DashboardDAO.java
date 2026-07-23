@@ -1,6 +1,6 @@
 package za.bc.cleaninginventory.model.dao.dashboard;
 
-import za.bc.cleaninginventory.database.DBConnection;
+import za.bc.cleaninginventory.database.ConnectionPool;
 import za.bc.cleaninginventory.model.dto.DashboardDTO;
 import za.bc.cleaninginventory.model.dto.LowStockDTO;
 import za.bc.cleaninginventory.model.dto.RecentRequestDTO;
@@ -17,7 +17,7 @@ public class DashboardDAO {
 
         DashboardDTO dashboard = new DashboardDTO();
 
-        try (Connection conn = DBConnection.getConnection()) {
+        try (Connection conn = ConnectionPool.getConnection()) {
 
             dashboard.setTotalProducts(
                     getCount(conn, "SELECT COUNT(*) FROM products"));

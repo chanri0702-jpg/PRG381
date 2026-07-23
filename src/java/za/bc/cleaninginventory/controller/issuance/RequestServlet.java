@@ -8,6 +8,7 @@ import za.bc.cleaninginventory.model.dao.issuance.RequestDAO;
 import za.bc.cleaninginventory.model.dao.material.MaterialDAO;
 import za.bc.cleaninginventory.model.entity.Product;
 import za.bc.cleaninginventory.model.entity.Request;
+import za.bc.cleaninginventory.service.issuance.EmailService;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -36,6 +37,12 @@ public class RequestServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = req.getSession(false);
+        
+        //temp login details for testing
+        session = req.getSession(true);
+        session.setAttribute("employeeNumber", "100003");
+        //REMOVE AFTER
+        
         String employeeNumber = (session != null) ? (String) session.getAttribute("employeeNumber") : null;
 
         if (employeeNumber == null) {
@@ -78,7 +85,7 @@ public class RequestServlet extends HttpServlet {
             req.setAttribute("errorMessage", "Invalid request reference.");
         }
 
-        req.getRequestDispatcher("issue-request.jsp").forward(req, resp);
+        req.getRequestDispatcher("/issuance/issueRequest.jsp").forward(req, resp);
     }
 
     @Override
@@ -117,7 +124,7 @@ public class RequestServlet extends HttpServlet {
                 session.setAttribute("flashError", "Unknown action.");
         }
 
-        resp.sendRedirect("issue-request");
+        resp.sendRedirect("request");
     }
 
     private void handleCreate(HttpServletRequest req, int empId, HttpSession session) {
@@ -129,10 +136,30 @@ public class RequestServlet extends HttpServlet {
 
         try {
             Request newRequest = new Request(empId, input.prodId, input.quantity, input.priority, input.description);
-            requestDAO.insertRequest(newRequest);
+            int newReqId = requestDAO.insertRequest(newRequest);
             session.setAttribute("flashSuccess", "Your request has been submitted.");
+
+            if ("URGENT".equals(input.priority)) {
+                notifyStorekeepersOfUrgentRequest(newReqId);
+            }
         } catch (SQLException e) {
             session.setAttribute("flashError", "Database error: " + e.getMessage());
+        }
+    }
+
+    private void notifyStorekeepersOfUrgentRequest(int reqId) {
+        try {
+            RequestDAO.UrgentNotificationInfo info = requestDAO.getNotificationInfo(reqId);
+            if (info == null) return;
+
+            List<String> storekeeperEmails = requestDAO.getStorekeeperEmailsByCampus(info.campId);
+            if (storekeeperEmails.isEmpty()) return;
+
+            EmailService.sendUrgentRequestNotificationAsync(
+                    storekeeperEmails, info.requesterName, info.productName, info.quantity, info.description);
+
+        } catch (SQLException e) {
+            System.err.println("Could not send urgent request notification: " + e.getMessage());
         }
     }
 
@@ -153,6 +180,9 @@ public class RequestServlet extends HttpServlet {
             boolean success = requestDAO.updateRequest(updated);
             if (success) {
                 session.setAttribute("flashSuccess", "Your request has been updated.");
+                if ("URGENT".equals(input.priority)) {
+                    notifyStorekeepersOfUrgentRequest(reqId);
+                }
             } else {
                 session.setAttribute("flashError", "Could not update the request — it may have already been actioned.");
             }
