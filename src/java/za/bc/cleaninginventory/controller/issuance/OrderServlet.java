@@ -105,7 +105,7 @@ public class OrderServlet extends HttpServlet {
 
         if (!hasSelected && !hasManual) {
             session.setAttribute("flashError", "Select at least one request or add a product manually.");
-            resp.sendRedirect("/issuance/orders");
+            resp.sendRedirect("orders");
             return;
         }
 
@@ -121,7 +121,7 @@ public class OrderServlet extends HttpServlet {
 
                     if (quantity <= 0 || price.compareTo(BigDecimal.ZERO) < 0) {
                         session.setAttribute("flashError", "Quantities must be positive and price cannot be negative.");
-                        resp.sendRedirect("/issuance/orders");
+                        resp.sendRedirect("orders");
                         return;
                     }
                     lines.add(new OrderDAO.OrderLine(reqId, prodId, quantity, price, null));
@@ -139,7 +139,7 @@ public class OrderServlet extends HttpServlet {
 
                     if (quantity <= 0 || price.compareTo(BigDecimal.ZERO) < 0) {
                         session.setAttribute("flashError", "Quantities must be positive and price cannot be negative.");
-                        resp.sendRedirect("/issuance/orders");
+                        resp.sendRedirect("orders");
                         return;
                     }
                     lines.add(new OrderDAO.OrderLine(null, prodId, quantity, price, campId));
@@ -160,14 +160,14 @@ public class OrderServlet extends HttpServlet {
             session.setAttribute("flashError", "Database error: " + e.getMessage());
         }
 
-        resp.sendRedirect("/issuance/orders");
+        resp.sendRedirect("orders");
     }
 
     private void handleReject(HttpServletRequest req, HttpServletResponse resp, HttpSession session) throws IOException {
         String reqIdParam = req.getParameter("reqId");
         if (isEmpty(reqIdParam)) {
             session.setAttribute("flashError", "Missing request reference.");
-            resp.sendRedirect("/issuance/orders");
+            resp.sendRedirect("orders");
             return;
         }
         try {
@@ -181,7 +181,7 @@ public class OrderServlet extends HttpServlet {
         } catch (NumberFormatException | SQLException e) {
             session.setAttribute("flashError", "Could not reject the request: " + e.getMessage());
         }
-        resp.sendRedirect("/issuance/orders");
+        resp.sendRedirect("orders");
     }
 
     private String validateSupervisorSession(HttpSession session) {

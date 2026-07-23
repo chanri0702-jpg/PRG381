@@ -40,7 +40,7 @@ public class RequestServlet extends HttpServlet {
         
         //temp login details for testing
         session = req.getSession(true);
-        session.setAttribute("employeeNumber", "100003");
+        session.setAttribute("employeeNumber", "100000");
         //REMOVE AFTER
         
         String employeeNumber = (session != null) ? (String) session.getAttribute("employeeNumber") : null;
@@ -150,16 +150,27 @@ public class RequestServlet extends HttpServlet {
     private void notifyStorekeepersOfUrgentRequest(int reqId) {
         try {
             RequestDAO.UrgentNotificationInfo info = requestDAO.getNotificationInfo(reqId);
-            if (info == null) return;
+            if (info == null) {
+                System.err.println("[URGENT EMAIL] No notification info found for req " + reqId);
+                return;
+            }
+
+            System.err.println("[URGENT EMAIL] campId=" + info.campId + " product=" + info.productName);
 
             List<String> storekeeperEmails = requestDAO.getStorekeeperEmailsByCampus(info.campId);
-            if (storekeeperEmails.isEmpty()) return;
+            System.err.println("[URGENT EMAIL] Found " + storekeeperEmails.size() + " storekeeper(s) for campId " + info.campId);
+
+            if (storekeeperEmails.isEmpty()) {
+                System.err.println("[URGENT EMAIL] No storekeepers on this campus - nothing to send");
+                return;
+            }
 
             EmailService.sendUrgentRequestNotificationAsync(
                     storekeeperEmails, info.requesterName, info.productName, info.quantity, info.description);
+            System.err.println("[URGENT EMAIL] Submitted send task for: " + storekeeperEmails);
 
         } catch (SQLException e) {
-            System.err.println("Could not send urgent request notification: " + e.getMessage());
+            System.err.println("[URGENT EMAIL] SQL error: " + e.getMessage());
         }
     }
 

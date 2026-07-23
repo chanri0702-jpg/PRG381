@@ -44,7 +44,7 @@
         Issuing stock deducts directly from your campus's inventory — it isn't tied to any request.
     </p>
 
-    <!-- Issue Stock Form -->
+
     <div class="card mb-4">
         <div class="card-header bg-dark text-white">
             Issue Stock
@@ -106,7 +106,6 @@
         </div>
     </div>
 
-    <!-- Issuance History -->
     <div class="card">
         <div class="card-header bg-dark text-white">
             Issuance History
