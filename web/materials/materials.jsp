@@ -193,6 +193,11 @@
         .page-header {
             flex-shrink: 0;
         }
+        
+        /* Remove duplicate header from topbar */
+        .topbar h1, .topbar p {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -200,6 +205,7 @@
         <%@ include file="../components/sidebar.jsp" %>
         
         <main class="main-content">
+            <!-- Topbar - will not show title -->
             <%@ include file="../components/topbar.jsp" %>
             
             <!-- Determine which view to show -->
@@ -230,9 +236,10 @@
             <!-- ============================================ -->
             <c:if test="${viewMode == 'list'}">
                 <div class="page-section active">
+                    <!-- Page Header - Only ONE header -->
                     <div class="page-header">
                         <div class="page-header-text">
-                            <h1></h1>
+                            <h1>Materials Management</h1>
                             <p>Manage various items including cleaning stock, categories, reorder levels, search, filtering, and low-stock status.</p>
                         </div>
                         <div class="page-actions">
