@@ -14,3 +14,7 @@ nbproject/private/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# NetBeans generated files
+nbproject/build-impl.xml
+nbproject/genfiles.properties
