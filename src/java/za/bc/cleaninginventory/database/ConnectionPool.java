@@ -23,7 +23,7 @@ public class ConnectionPool {
 
         // Pool Configuration
         config.setMaximumPoolSize(3);
-        config.setMinimumIdle(1);
+        config.setMinimumIdle(0);
         config.setConnectionTimeout(10000);
         config.setIdleTimeout(60000);
         config.setMaxLifetime(300000);

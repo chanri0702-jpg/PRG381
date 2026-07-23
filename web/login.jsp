@@ -213,6 +213,13 @@
                 <p>Sign in to manage stock & system files</p>
             </div>
 
+            <!-- Timeout Alerts -->
+            <% if ("true".equals(request.getParameter("timeout"))) { %>
+                <div class="alert alert-error">
+                    You have been securely logged out due to inactivity.
+                </div>
+            <% } %>
+
             <!-- Error Alerts -->
             <% if (request.getAttribute("error") != null) { %>
                 <div class="alert alert-error">
@@ -229,8 +236,8 @@
 
             <form action="<%= request.getContextPath() %>/login" method="POST">
                 <div class="form-group">
-                    <label class="form-label" for="username">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Enter username" required autocomplete="username">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Enter email address" required autocomplete="email">
                 </div>
 
                 <div class="form-group">

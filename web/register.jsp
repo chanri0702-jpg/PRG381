@@ -207,7 +207,8 @@
 
     <%
         // Pre-populate input values on failure
-        String enteredUsername = request.getAttribute("enteredUsername") != null ? (String) request.getAttribute("enteredUsername") : "";
+        String enteredName = request.getAttribute("enteredName") != null ? (String) request.getAttribute("enteredName") : "";
+        String enteredSurname = request.getAttribute("enteredSurname") != null ? (String) request.getAttribute("enteredSurname") : "";
         String enteredEmail = request.getAttribute("enteredEmail") != null ? (String) request.getAttribute("enteredEmail") : "";
         String enteredRole = request.getAttribute("enteredRole") != null ? (String) request.getAttribute("enteredRole") : "";
     %>
@@ -228,8 +229,13 @@
 
             <form action="<%= request.getContextPath() %>/register" method="POST">
                 <div class="form-group">
-                    <label class="form-label" for="username">Username</label>
-                    <input type="text" id="username" name="username" class="form-control" placeholder="Letters, numbers, underscores (3-20 chars)" required value="<%= enteredUsername %>" autocomplete="username">
+                    <label class="form-label" for="name">First Name</label>
+                    <input type="text" id="name" name="name" class="form-control" placeholder="Enter your first name" required value="<%= enteredName %>" autocomplete="given-name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="surname">Surname</label>
+                    <input type="text" id="surname" name="surname" class="form-control" placeholder="Enter your surname" required value="<%= enteredSurname %>" autocomplete="family-name">
                 </div>
 
                 <div class="form-group">

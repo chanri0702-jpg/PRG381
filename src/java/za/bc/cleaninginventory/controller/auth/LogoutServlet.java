@@ -20,7 +20,12 @@ public class LogoutServlet extends HttpServlet {
         if (session != null) {
             session.invalidate();
         }
-        response.sendRedirect(request.getContextPath() + "/login");
+        String timeout = request.getParameter("timeout");
+        if ("true".equals(timeout)) {
+            response.sendRedirect(request.getContextPath() + "/login?timeout=true");
+        } else {
+            response.sendRedirect(request.getContextPath() + "/login");
+        }
     }
 
     @Override

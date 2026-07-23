@@ -7,7 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
-import za.bc.cleaninginventory.model.entity.User;
+import za.bc.cleaninginventory.model.entity.Employee;
 import za.bc.cleaninginventory.service.auth.AuthenticationService;
 
 /**
@@ -31,23 +31,24 @@ public class LoginServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String username = request.getParameter("username");
+        String email = request.getParameter("email");
         String password = request.getParameter("password");
 
-        if (username == null || username.trim().isEmpty() || password == null || password.isEmpty()) {
-            request.setAttribute("error", "Username and Password cannot be empty.");
+        if (email == null || email.trim().isEmpty() || password == null || password.isEmpty()) {
+            request.setAttribute("error", "Email and Password cannot be empty.");
             request.getRequestDispatcher("/login.jsp").forward(request, response);
             return;
         }
 
-        User user = authService.authenticate(username.trim(), password);
-        if (user != null) {
+        Employee employee = authService.authenticate(email.trim(), password);
+        if (employee != null) {
             HttpSession session = request.getSession(true);
-            session.setAttribute("currentUser", user);
-            session.setAttribute("userRole", user.getRole().getRoleName());
+            session.setMaxInactiveInterval(120); // 2 minutes server-side timeout
+            session.setAttribute("currentUser", employee);
+            session.setAttribute("userRole", employee.getRole());
             response.sendRedirect(request.getContextPath() + "/dashboard");
         } else {
-            request.setAttribute("error", "Invalid username or password.");
+            request.setAttribute("error", "Invalid email or password.");
             request.getRequestDispatcher("/login.jsp").forward(request, response);
         }
     }

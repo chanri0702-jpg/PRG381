@@ -30,7 +30,8 @@ public class RegisterServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        String username = request.getParameter("username");
+        String name = request.getParameter("name");
+        String surname = request.getParameter("surname");
         String email = request.getParameter("email");
         String password = request.getParameter("password");
         String confirmPassword = request.getParameter("confirmPassword");
@@ -38,29 +39,32 @@ public class RegisterServlet extends HttpServlet {
 
         if (password == null || !password.equals(confirmPassword)) {
             request.setAttribute("error", "Passwords do not match.");
-            keepFormFields(request, username, email, role);
+            keepFormFields(request, name, surname, email, role);
             request.getRequestDispatcher("/register.jsp").forward(request, response);
             return;
         }
 
         try {
             authService.register(
-                username != null ? username.trim() : null, 
-                password, 
+                name != null ? name.trim() : null,
+                surname != null ? surname.trim() : null,
                 email != null ? email.trim() : null, 
-                role
+                password, 
+                role,
+                1 // Defaulting campId to 1 since it's not in the UI
             );
             request.setAttribute("success", "Registration successful! Please log in.");
             request.getRequestDispatcher("/login.jsp").forward(request, response);
         } catch (IllegalArgumentException e) {
             request.setAttribute("error", e.getMessage());
-            keepFormFields(request, username, email, role);
+            keepFormFields(request, name, surname, email, role);
             request.getRequestDispatcher("/register.jsp").forward(request, response);
         }
     }
 
-    private void keepFormFields(HttpServletRequest request, String username, String email, String role) {
-        request.setAttribute("enteredUsername", username);
+    private void keepFormFields(HttpServletRequest request, String name, String surname, String email, String role) {
+        request.setAttribute("enteredName", name);
+        request.setAttribute("enteredSurname", surname);
         request.setAttribute("enteredEmail", email);
         request.setAttribute("enteredRole", role);
     }

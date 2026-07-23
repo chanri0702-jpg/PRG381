@@ -26,6 +26,12 @@ public class SessionListener implements HttpSessionListener, ServletContextListe
     @Override
     public void contextDestroyed(ServletContextEvent sce) {
         System.out.println("Cleaning Inventory Application shutting down...");
+        try {
+            za.bc.cleaninginventory.database.ConnectionPool.shutdown();
+            System.out.println("Database connection pool closed.");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
