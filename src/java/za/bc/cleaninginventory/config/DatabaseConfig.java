@@ -1,8 +1,8 @@
 package za.bc.cleaninginventory.config;
 
-public class DatabaseConfig {
+public class DatabaseConfig{
 
-    private DatabaseConfig() {
+    private DatabaseConfig(){
         // Prevent instantiation
         throw new UnsupportedOperationException("Utility class cannot be instantiated.");
     }
