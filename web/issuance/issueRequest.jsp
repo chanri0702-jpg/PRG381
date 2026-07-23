@@ -20,17 +20,43 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
-    <title>Stock Requests - Cleaning Inventory System</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <title>Dashboard | Cleaning Inventory & Issuance System</title>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/cims_logo.png">
+
+    <!-- Google Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
 </head>
-<body class="bg-light">
+
+<body>
+
+    <div class="parent-container">
+
+        <%@ include file="../components/sidebar.jsp" %>
+
+        <main class="main-content">
+
+            <%@ include file="../components/topbar.jsp" %>
+            
+            <div class="dashboard-content">
+            
+              
 <div class="container py-4">
 
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="mb-0">Stock Requests</h2>
-        <a href="dashboard" class="btn btn-outline-secondary btn-sm">&larr; Back to Dashboard</a>
     </div>
 
     <% if (successMessage != null) { %>

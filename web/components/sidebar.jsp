@@ -57,16 +57,16 @@
             </li>
             
             <li class="<%= "request".equals(request.getAttribute("activePage")) ? "active" : "" %>">
-                <a href="${pageContext.request.contextPath}/issuance">
+                <a href="${pageContext.request.contextPath}/orders">
                     <i class="fas fa-hand-holding"></i>
-                    <span>Stock Issuance</span>
+                    <span>Stock Order</span>
                 </a>
             </li>
             
             <li class="<%= "orders".equals(request.getAttribute("activePage")) ? "active" : "" %>">
-                <a href="${pageContext.request.contextPath}/issuance">
+                <a href="${pageContext.request.contextPath}/request">
                     <i class="fas fa-hand-holding"></i>
-                    <span>Stock Issuance</span>
+                    <span>Stock Requests</span>
                 </a>
             </li>
 

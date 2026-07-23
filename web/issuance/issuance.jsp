@@ -13,15 +13,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
     <meta charset="UTF-8">
 
-    <title>Issue Stock - Cleaning Inventory System</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="css/app.css" rel="stylesheet">
-
-
-    <title>Issuance | Cleaning Inventory & Issuance System</title>
+    <title>Dashboard | Cleaning Inventory & Issuance System</title>
     <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/cims_logo.png">
 
     <!-- Google Font -->
@@ -31,18 +26,29 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
+    <!-- CSS -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/issuance.css">
-
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
 </head>
-<body class="bg-light">
-<div class="container py-4">
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Issue Stock to Cleaners</h2>
-        <a href="dashboard" class="btn btn-outline-secondary btn-sm">&larr; Back to Dashboard</a>
+<body>
+<div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Stock Issuance</h2>
     </div>
+    <div class="parent-container">
+
+        <%@ include file="../components/sidebar.jsp" %>
+
+        <main class="main-content">
+
+            <%@ include file="../components/topbar.jsp" %>
+            
+            <div class="dashboard-content">
+            
+              
+<div class="container py-4">
 
     <% if (successMessage != null) { %>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
