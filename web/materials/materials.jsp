@@ -205,7 +205,6 @@
         <%@ include file="../components/sidebar.jsp" %>
         
         <main class="main-content">
-            <!-- Topbar - will not show title -->
             <%@ include file="../components/topbar.jsp" %>
             
             <!-- Determine which view to show -->
@@ -236,7 +235,6 @@
             <!-- ============================================ -->
             <c:if test="${viewMode == 'list'}">
                 <div class="page-section active">
-                    <!-- Page Header - Only ONE header -->
                     <div class="page-header">
                         <div class="page-header-text">
                             <h1>Materials Management</h1>
@@ -377,7 +375,9 @@
                                                         <br><small style="color: #94A3B8;">${material.description}</small>
                                                     </td>
                                                     <td>${material.supplierName}</td>
-                                                    <td><fmt:formatNumber value="${material.price}" type="currency" currencySymbol="$"/></td>
+                                                    <td>
+                                                        <fmt:formatNumber value="${material.price}" type="currency" currencySymbol="R" maxFractionDigits="2" minFractionDigits="2"/>
+                                                    </td>
                                                     <td>
                                                         <c:choose>
                                                             <c:when test="${material.stockQuantity <= 10}">
@@ -478,7 +478,7 @@
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label for="price">Price <span style="color: #DC2626;">*</span></label>
+                                    <label for="price">Price (ZAR) <span style="color: #DC2626;">*</span></label>
                                     <input type="number" step="0.01" id="price" name="price" value="${material.price}" required 
                                            placeholder="0.00" min="0">
                                 </div>
@@ -563,7 +563,7 @@
                                 </div>
                                 
                                 <div class="form-group">
-                                    <label for="price">Price <span style="color: #DC2626;">*</span></label>
+                                    <label for="price">Price (ZAR) <span style="color: #DC2626;">*</span></label>
                                     <input type="number" step="0.01" id="price" name="price" value="${material.price}" required 
                                            placeholder="0.00" min="0">
                                 </div>
@@ -648,7 +648,9 @@
                             </div>
                             <div class="view-item">
                                 <label>Price</label>
-                                <p><fmt:formatNumber value="${material.price}" type="currency" currencySymbol="$"/></p>
+                                <p>
+                                    <fmt:formatNumber value="${material.price}" type="currency" currencySymbol="R" maxFractionDigits="2" minFractionDigits="2"/>
+                                </p>
                             </div>
                             <div class="view-item">
                                 <label>Stock Quantity</label>
