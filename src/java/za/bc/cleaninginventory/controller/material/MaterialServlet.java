@@ -13,13 +13,13 @@ import za.bc.cleaninginventory.model.dao.material.MaterialDAO;
 import za.bc.cleaninginventory.model.entity.Material;
 import za.bc.cleaninginventory.service.material.MaterialService;
 
-@WebServlet(name = "MaterialServlet", urlPatterns ={"/materials"})
-public class MaterialServlet extends HttpServlet{
+@WebServlet(name = "MaterialServlet", urlPatterns = {"/materials"})
+public class MaterialServlet extends HttpServlet {
 
     private MaterialService materialService;
 
     @Override
-    public void init(){
+    public void init() {
         materialService = new MaterialService();
     }
 
@@ -27,16 +27,16 @@ public class MaterialServlet extends HttpServlet{
     protected void doGet(
             HttpServletRequest request,
             HttpServletResponse response
-    )throws ServletException, IOException{
+    ) throws ServletException, IOException {
 
         String action = request.getParameter("action");
 
-        if (action == null || action.isBlank()){
+        if (action == null || action.isBlank()) {
             action = "list";
         }
 
-        try{
-            switch (action){
+        try {
+            switch (action) {
                 case "add":
                     showAddPage(request, response);
                     break;
@@ -53,13 +53,17 @@ public class MaterialServlet extends HttpServlet{
                     getMaterialJson(request, response);
                     break;
 
+                case "search":
+                    searchMaterials(request, response);
+                    break;
+
                 case "list":
                 default:
                     listMaterials(request, response);
                     break;
             }
 
-        }catch (SQLException | IllegalArgumentException exception){
+        } catch (SQLException | IllegalArgumentException exception) {
             throw new ServletException(
                     "Unable to process material request.",
                     exception
@@ -71,18 +75,18 @@ public class MaterialServlet extends HttpServlet{
     protected void doPost(
             HttpServletRequest request,
             HttpServletResponse response
-    )throws ServletException, IOException{
+    ) throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
 
         String action = request.getParameter("action");
 
-        if (action == null || action.isBlank()){
+        if (action == null || action.isBlank()) {
             action = "create";
         }
 
-        try{
-            switch(action){
+        try {
+            switch (action) {
                 case "create":
                 case "add":
                     createMaterial(request, response);
@@ -103,7 +107,7 @@ public class MaterialServlet extends HttpServlet{
                     break;
             }
 
-        }catch (SQLException exception){
+        } catch (SQLException exception) {
             throw new ServletException(
                     "A material database operation failed.",
                     exception
@@ -114,26 +118,9 @@ public class MaterialServlet extends HttpServlet{
     private void listMaterials(
             HttpServletRequest request,
             HttpServletResponse response
-    )throws SQLException, ServletException, IOException{
+    ) throws SQLException, ServletException, IOException {
 
-        String searchTerm = request.getParameter("searchTerm");
-        String supplierId = request.getParameter("supplierId");
-        String campusId = request.getParameter("campusId");
-
-        List<Material> materials;
-
-        //Check if the search parameters are present
-        if ((searchTerm != null && !searchTerm.trim().isEmpty()) ||
-            (supplierId != null && !supplierId.equals("All")) ||
-            (campusId != null && !campusId.equals("All"))){
-            materials = materialService.searchMaterials(searchTerm, supplierId, campusId);
-            request.setAttribute("searchTerm", searchTerm);
-            request.setAttribute("selectedSupplier", supplierId);
-            request.setAttribute("selectedCampus", campusId);
-        }else{
-            materials = materialService.getAllMaterials();
-        }
-
+        List<Material> materials = materialService.getAllMaterials();
         List<MaterialDAO.Supplier> suppliers = materialService.getDistinctSuppliers();
         List<MaterialDAO.Campus> campuses = materialService.getDistinctCampuses();
 
@@ -142,9 +129,37 @@ public class MaterialServlet extends HttpServlet{
         request.setAttribute("campuses", campuses);
         request.setAttribute("lowStockCount", materialService.getLowStockCount());
         request.setAttribute("totalMaterials", materialService.getTotalMaterialCount());
-        request.setAttribute("view", "list");
+        request.setAttribute("viewMode", "list");
 
-        //Forwards the work to (web/materials/materials.jsp)
+        // Forward to /materials/materials.jsp
+        request.getRequestDispatcher("/materials/materials.jsp")
+                .forward(request, response);
+    }
+
+    private void searchMaterials(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) throws SQLException, ServletException, IOException {
+
+        String searchTerm = request.getParameter("searchTerm");
+        String supplierId = request.getParameter("supplierId");
+        String campusId = request.getParameter("campusId");
+
+        List<Material> materials = materialService.searchMaterials(searchTerm, supplierId, campusId);
+        List<MaterialDAO.Supplier> suppliers = materialService.getDistinctSuppliers();
+        List<MaterialDAO.Campus> campuses = materialService.getDistinctCampuses();
+
+        request.setAttribute("materials", materials);
+        request.setAttribute("suppliers", suppliers);
+        request.setAttribute("campuses", campuses);
+        request.setAttribute("searchTerm", searchTerm);
+        request.setAttribute("selectedSupplier", supplierId);
+        request.setAttribute("selectedCampus", campusId);
+        request.setAttribute("lowStockCount", materialService.getLowStockCount());
+        request.setAttribute("totalMaterials", materialService.getTotalMaterialCount());
+        request.setAttribute("viewMode", "list");
+
+        // Forward to /materials/materials.jsp
         request.getRequestDispatcher("/materials/materials.jsp")
                 .forward(request, response);
     }
@@ -152,14 +167,14 @@ public class MaterialServlet extends HttpServlet{
     private void showAddPage(
             HttpServletRequest request,
             HttpServletResponse response
-    )throws SQLException, ServletException, IOException{
+    ) throws SQLException, ServletException, IOException {
 
         request.setAttribute("suppliers", materialService.getDistinctSuppliers());
         request.setAttribute("campuses", materialService.getDistinctCampuses());
         request.setAttribute("isEdit", false);
-        request.setAttribute("view", "add");
+        request.setAttribute("viewMode", "add");
 
-        //Forwards to (web/materials/materials.jsp)
+        // Forward to /materials/materials.jsp
         request.getRequestDispatcher("/materials/materials.jsp")
                 .forward(request, response);
     }
@@ -167,13 +182,13 @@ public class MaterialServlet extends HttpServlet{
     private void showEditPage(
             HttpServletRequest request,
             HttpServletResponse response
-    ) throws SQLException, ServletException, IOException{
+    ) throws SQLException, ServletException, IOException {
 
         Long materialId = getIdFromRequest(request);
 
         Material material = materialService.getMaterialById(materialId);
 
-        if (material == null){
+        if (material == null) {
             response.sendRedirect(
                     request.getContextPath()
                     + "/materials?error=Material+was+not+found"
@@ -185,9 +200,9 @@ public class MaterialServlet extends HttpServlet{
         request.setAttribute("suppliers", materialService.getDistinctSuppliers());
         request.setAttribute("campuses", materialService.getDistinctCampuses());
         request.setAttribute("isEdit", true);
-        request.setAttribute("view", "edit");
+        request.setAttribute("viewMode", "edit");
 
-        //Forward to /materials/materials.jsp (web/materials/materials.jsp)
+        // Forward to /materials/materials.jsp
         request.getRequestDispatcher("/materials/materials.jsp")
                 .forward(request, response);
     }
@@ -195,13 +210,13 @@ public class MaterialServlet extends HttpServlet{
     private void showViewPage(
             HttpServletRequest request,
             HttpServletResponse response
-    ) throws SQLException, ServletException, IOException{
+    ) throws SQLException, ServletException, IOException {
 
         Long materialId = getIdFromRequest(request);
 
         Material material = materialService.getMaterialById(materialId);
 
-        if (material == null){
+        if (material == null) {
             response.sendRedirect(
                     request.getContextPath()
                     + "/materials?error=Material+was+not+found"
@@ -210,9 +225,9 @@ public class MaterialServlet extends HttpServlet{
         }
 
         request.setAttribute("material", material);
-        request.setAttribute("view", "view");
+        request.setAttribute("viewMode", "view");
 
-        //Forward to /materials/materials.jsp (web/materials/materials.jsp)
+        // Forward to /materials/materials.jsp
         request.getRequestDispatcher("/materials/materials.jsp")
                 .forward(request, response);
     }
@@ -220,16 +235,16 @@ public class MaterialServlet extends HttpServlet{
     private void getMaterialJson(
             HttpServletRequest request,
             HttpServletResponse response
-    )throws ServletException, IOException{
+    ) throws ServletException, IOException {
 
-        try{
+        try {
             Long materialId = getIdFromRequest(request);
             Material material = materialService.getMaterialById(materialId);
 
             response.setContentType("application/json");
             response.setCharacterEncoding("UTF-8");
 
-            if (material != null){
+            if (material != null) {
                 String json = String.format(
                     "{\"success\":true,\"material\":{"
                     + "\"prodId\":%d,"
@@ -253,11 +268,11 @@ public class MaterialServlet extends HttpServlet{
                     escapeJson(material.getCampusName() != null ? material.getCampusName() : "")
                 );
                 response.getWriter().write(json);
-            }else{
+            } else {
                 response.getWriter().write("{\"success\":false,\"message\":\"Material not found\"}");
             }
 
-        }catch (Exception exception){
+        } catch (Exception exception) {
             response.getWriter().write(
                 "{\"success\":false,\"message\":\"Error loading material: " 
                 + escapeJson(exception.getMessage()) + "\"}"
@@ -268,14 +283,14 @@ public class MaterialServlet extends HttpServlet{
     private void createMaterial(
             HttpServletRequest request,
             HttpServletResponse response
-    )throws SQLException, ServletException, IOException{
+    ) throws SQLException, ServletException, IOException {
 
         Material material = buildMaterialFromRequest(request);
 
-        try{
+        try {
             boolean created = materialService.createMaterial(material);
 
-            if (!created){
+            if (!created) {
                 throw new IllegalArgumentException(
                         "Material could not be added."
                 );
@@ -286,7 +301,7 @@ public class MaterialServlet extends HttpServlet{
                     + "/materials?success=Material+added+successfully"
             );
 
-        }catch (IllegalArgumentException exception){
+        } catch (IllegalArgumentException exception) {
 
             request.setAttribute(
                     "errorMessage",
@@ -297,8 +312,9 @@ public class MaterialServlet extends HttpServlet{
             request.setAttribute("suppliers", materialService.getDistinctSuppliers());
             request.setAttribute("campuses", materialService.getDistinctCampuses());
             request.setAttribute("isEdit", false);
-            request.setAttribute("view", "add");
+            request.setAttribute("viewMode", "add");
 
+            // Forward to /materials/materials.jsp
             request.getRequestDispatcher("/materials/materials.jsp")
                     .forward(request, response);
         }
@@ -307,11 +323,11 @@ public class MaterialServlet extends HttpServlet{
     private void updateMaterial(
             HttpServletRequest request,
             HttpServletResponse response
-    )throws SQLException, ServletException, IOException{
+    ) throws SQLException, ServletException, IOException {
 
         Material material = buildMaterialFromRequest(request);
 
-        try{
+        try {
             material.setProdId(
                     parsePositiveLong(
                             request.getParameter("prodId"),
@@ -321,7 +337,7 @@ public class MaterialServlet extends HttpServlet{
 
             boolean updated = materialService.updateMaterial(material);
 
-            if(!updated){
+            if (!updated) {
                 throw new IllegalArgumentException(
                         "Material could not be updated."
                 );
@@ -332,7 +348,7 @@ public class MaterialServlet extends HttpServlet{
                     + "/materials?success=Material+updated+successfully"
             );
 
-        }catch (IllegalArgumentException exception){
+        } catch (IllegalArgumentException exception) {
 
             request.setAttribute(
                     "errorMessage",
@@ -343,8 +359,9 @@ public class MaterialServlet extends HttpServlet{
             request.setAttribute("suppliers", materialService.getDistinctSuppliers());
             request.setAttribute("campuses", materialService.getDistinctCampuses());
             request.setAttribute("isEdit", true);
-            request.setAttribute("view", "edit");
+            request.setAttribute("viewMode", "edit");
 
+            // Forward to /materials/materials.jsp
             request.getRequestDispatcher("/materials/materials.jsp")
                     .forward(request, response);
         }
@@ -353,7 +370,7 @@ public class MaterialServlet extends HttpServlet{
     private void deleteMaterial(
             HttpServletRequest request,
             HttpServletResponse response
-    )throws SQLException, ServletException, IOException{
+    ) throws SQLException, ServletException, IOException {
 
         try {
             Long materialId =
@@ -364,7 +381,7 @@ public class MaterialServlet extends HttpServlet{
 
             boolean deleted = materialService.deleteMaterial(materialId);
 
-            if (!deleted){
+            if (!deleted) {
                 throw new IllegalArgumentException(
                         "Material was not found."
                 );
@@ -375,7 +392,7 @@ public class MaterialServlet extends HttpServlet{
                     + "/materials?success=Material+deleted+successfully"
             );
 
-        } catch (IllegalArgumentException exception){
+        } catch (IllegalArgumentException exception) {
 
             request.setAttribute(
                     "errorMessage",
@@ -388,7 +405,7 @@ public class MaterialServlet extends HttpServlet{
 
     private Material buildMaterialFromRequest(
             HttpServletRequest request
-    ){
+    ) {
 
         Material material = new Material();
 
@@ -402,37 +419,37 @@ public class MaterialServlet extends HttpServlet{
 
         String priceStr = request.getParameter("price");
         try {
-            if (priceStr != null && !priceStr.isBlank()){
+            if (priceStr != null && !priceStr.isBlank()) {
                 material.setPrice(new BigDecimal(priceStr));
             }
-        } catch (NumberFormatException exception){
+        } catch (NumberFormatException exception) {
             material.setPrice(BigDecimal.ZERO);
         }
 
         String busIdStr = request.getParameter("busId");
         try {
-            if (busIdStr != null && !busIdStr.isBlank()){
+            if (busIdStr != null && !busIdStr.isBlank()) {
                 material.setBusId(Long.parseLong(busIdStr));
             }
-        } catch (NumberFormatException exception){
+        } catch (NumberFormatException exception) {
             material.setBusId(0L);
         }
 
         String stockStr = request.getParameter("stockQuantity");
         try {
-            if (stockStr != null && !stockStr.isBlank()){
+            if (stockStr != null && !stockStr.isBlank()) {
                 material.setStockQuantity(Integer.parseInt(stockStr));
             }
-        } catch (NumberFormatException exception){
+        } catch (NumberFormatException exception) {
             material.setStockQuantity(0);
         }
 
         String campIdStr = request.getParameter("campId");
         try {
-            if (campIdStr != null && !campIdStr.isBlank()){
+            if (campIdStr != null && !campIdStr.isBlank()) {
                 material.setCampId(Integer.parseInt(campIdStr));
             }
-        } catch (NumberFormatException exception){
+        } catch (NumberFormatException exception) {
             material.setCampId(0);
         }
 
@@ -441,7 +458,7 @@ public class MaterialServlet extends HttpServlet{
 
     private Long getIdFromRequest(
             HttpServletRequest request
-    ){
+    ) {
 
         return parsePositiveLong(
                 request.getParameter("id"),
@@ -452,9 +469,9 @@ public class MaterialServlet extends HttpServlet{
     private Long parsePositiveLong(
             String value,
             String errorMessage
-    ){
+    ) {
 
-        if (value == null || value.isBlank()){
+        if (value == null || value.isBlank()) {
             throw new IllegalArgumentException(
                     errorMessage
             );
@@ -464,7 +481,7 @@ public class MaterialServlet extends HttpServlet{
             long parsedValue =
                     Long.parseLong(value);
 
-            if (parsedValue <= 0){
+            if (parsedValue <= 0) {
                 throw new IllegalArgumentException(
                         errorMessage
                 );
@@ -472,15 +489,15 @@ public class MaterialServlet extends HttpServlet{
 
             return parsedValue;
 
-        } catch (NumberFormatException exception){
+        } catch (NumberFormatException exception) {
             throw new IllegalArgumentException(
                     errorMessage
             );
         }
     }
 
-    private String escapeJson(String value){
-        if (value == null){
+    private String escapeJson(String value) {
+        if (value == null) {
             return "";
         }
         return value.replace("\\", "\\\\")
