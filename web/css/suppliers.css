@@ -66,6 +66,10 @@
 ==================================================*/
 
 .supplier-table-card {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
     overflow: hidden;
 }
 
@@ -97,10 +101,54 @@
     font-size: 19px;
 }
 
+
+
+
+
 .table-responsive {
+    flex: 1;
+    min-height: 0;
     width: 100%;
     overflow-x: auto;
+    overflow-y: auto;
 }
+
+.supplier-table-card table {
+    width: 100%;
+    min-width: 970px;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.supplier-table-card thead th {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--table-header);
+}
+
+.table-responsive::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: #C7CDD8;
+    border-radius: 999px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: #AEB7C4;
+}
+
+
+
+
+
+
+
+
+
 
 .supplier-table-card table {
     min-width: 970px;
@@ -263,6 +311,14 @@
 
 .supplier-form {
     max-width: 980px;
+    overflow-y: auto;
+    
+    /* Hide scrollbar */
+    scrollbar-width: none;      /* Firefox */
+    -ms-overflow-style: none;   /* Internet Explorer & Edge */
+}
+.supplier-form::-webkit-scrollbar {
+    display: none;              /* Chrome, Edge, Safari */
 }
 
 .form-card {
@@ -365,6 +421,12 @@
 
 .supplier-profile-card {
     max-width: 1000px;
+
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+
     overflow: hidden;
     background: var(--surface-color);
     border: 1px solid var(--border-color);
@@ -408,7 +470,17 @@
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 24px;
+
+    flex: 1;
+    min-height: 0;
+
     padding: 28px;
+
+    overflow-y: auto;
+}
+
+.details-sections::-webkit-scrollbar {
+    width: 0px;
 }
 
 .details-section {
