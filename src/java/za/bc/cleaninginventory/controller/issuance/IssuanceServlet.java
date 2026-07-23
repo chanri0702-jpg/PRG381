@@ -36,18 +36,8 @@ public class IssuanceServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = req.getSession(false);
+        String employeeNumber = (String) session.getAttribute("employeeNumber");
         
-        //temp login details for testing
-        session = req.getSession(true);
-        session.setAttribute("employeeNumber", "100003");
-        session.setAttribute("role", "STOREKEEPER");
-        //REMOVE AFTER
-        
-        String employeeNumber = validateStorekeeperSession(session);
-        if (employeeNumber == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
 
         int storekeeperEmpId = Integer.parseInt(employeeNumber);
         moveFlashMessages(session, req);
@@ -75,18 +65,7 @@ public class IssuanceServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = req.getSession(false);
-        
-        //temp login details for testing
-        session = req.getSession(true);
-        session.setAttribute("employeeNumber", "100003");
-        session.setAttribute("role", "STOREKEEPER");
-        //REMOVE AFTER
-        
-        String employeeNumber = validateStorekeeperSession(session);
-        if (employeeNumber == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
+        String employeeNumber = (String) session.getAttribute("employeeNumber");
         
         int storekeeperEmpId = Integer.parseInt(employeeNumber);
         
@@ -135,17 +114,7 @@ public class IssuanceServlet extends HttpServlet {
     }
 
 
-    private String validateStorekeeperSession(HttpSession session) {
-        if (session == null) return null;
-
-        String employeeNumber = (String) session.getAttribute("employeeNumber");
-        String role = (String) session.getAttribute("role");
-
-        if (employeeNumber == null || !"STOREKEEPER".equals(role)) {
-            return null;
-        }
-        return employeeNumber;
-    }
+    
 
     private boolean isEmpty(String value) {
         return value == null || value.trim().isEmpty();

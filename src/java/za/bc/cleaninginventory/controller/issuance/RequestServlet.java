@@ -38,18 +38,11 @@ public class RequestServlet extends HttpServlet {
 
         HttpSession session = req.getSession(false);
         
-        //temp login details for testing
-        session = req.getSession(true);
-        session.setAttribute("employeeNumber", "100000");
-        //REMOVE AFTER
+        
         
         String employeeNumber = (session != null) ? (String) session.getAttribute("employeeNumber") : null;
 
-        if (employeeNumber == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
-
+        
         int empId;
         try {
             empId = Integer.parseInt(employeeNumber);
@@ -57,6 +50,8 @@ public class RequestServlet extends HttpServlet {
             resp.sendRedirect("login.jsp");
             return;
         }
+
+       
 
         moveFlashMessages(session, req);
 
@@ -95,11 +90,6 @@ public class RequestServlet extends HttpServlet {
         HttpSession session = req.getSession(false);
         String employeeNumber = (session != null) ? (String) session.getAttribute("employeeNumber") : null;
 
-        if (employeeNumber == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
-
         int empId;
         try {
             empId = Integer.parseInt(employeeNumber);
@@ -107,6 +97,7 @@ public class RequestServlet extends HttpServlet {
             resp.sendRedirect("login.jsp");
             return;
         }
+
 
         String action = req.getParameter("action");
 

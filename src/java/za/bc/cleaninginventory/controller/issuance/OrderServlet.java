@@ -41,16 +41,7 @@ public class OrderServlet extends HttpServlet {
 
         HttpSession session = req.getSession(false);
         
-        //FAKE INFO-REMOVE LATER
-        session = req.getSession(true);
-        session.setAttribute("employeeNumber", "100002");
-        session.setAttribute("role", "SUPERVISOR");
-        
-        String employeeNumber = validateSupervisorSession(session);
-        if (employeeNumber == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
+        String employeeNumber = (String) session.getAttribute("employeeNumber");
 
         int supervisorEmpId = Integer.parseInt(employeeNumber);
         moveFlashMessages(session, req);
@@ -81,12 +72,8 @@ public class OrderServlet extends HttpServlet {
             throws ServletException, IOException {
 
         HttpSession session = req.getSession(false);
-        String employeeNumber = validateSupervisorSession(session);
-        if (employeeNumber == null) {
-            resp.sendRedirect("login.jsp");
-            return;
-        }
-
+        
+        String employeeNumber = (String) session.getAttribute("employeeNumber");
         String action = req.getParameter("action");
         if ("reject".equals(action)) {
             handleReject(req, resp, session);
@@ -184,13 +171,7 @@ public class OrderServlet extends HttpServlet {
         resp.sendRedirect("orders");
     }
 
-    private String validateSupervisorSession(HttpSession session) {
-        if (session == null) return null;
-        String employeeNumber = (String) session.getAttribute("employeeNumber");
-        String role = (String) session.getAttribute("role");
-        if (employeeNumber == null || !"SUPERVISOR".equals(role)) return null;
-        return employeeNumber;
-    }
+    
 
     private boolean isEmpty(String value) {
         return value == null || value.trim().isEmpty();
