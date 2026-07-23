@@ -56,15 +56,6 @@ public class AuthenticationFilter implements Filter {
 
         String role = (String) session.getAttribute("userRole");
 
-        // Role-Based Access Control (RBAC)
-        // Storekeeper is restricted from accessing Reports
-        if (path.startsWith("/reports") && !"SUPERVISOR".equalsIgnoreCase(role)) {
-            // Unauthorized access: redirect to dashboard with an error
-            httpRequest.setAttribute("error", "Access Denied: You do not have permissions to view reports.");
-            httpRequest.getRequestDispatcher("/dashboard").forward(httpRequest, httpResponse);
-            return;
-        }
-
         // User is authenticated and authorized, proceed
         chain.doFilter(request, response);
     }
