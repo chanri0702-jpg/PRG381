@@ -63,8 +63,9 @@
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+     
      <link rel="stylesheet" href="${pageContext.request.contextPath}/css/issuance.css">
+     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
 
 </head>
 
@@ -75,6 +76,26 @@
         <%@ include file="../components/sidebar.jsp" %>
 
         <main class="main-content">
+            
+            <section class="stock-cards">
+
+       
+                <a href="${pageContext.request.contextPath}/issuance" class="<%= "issuance".equals(request.getAttribute("activePage")) ? "active" : "" %>">
+                    
+                    <span>Stock Issuance</span>
+                </a>
+                <a href="${pageContext.request.contextPath}/request" class="<%= "request".equals(request.getAttribute("activePage")) ? "active" : "" %>">
+                 
+                    <span>Stock Requests</span>
+                </a>
+           
+                <a href="${pageContext.request.contextPath}/orders" class="<%= "orders".equals(request.getAttribute("activePage")) ? "active" : "" %>">
+                  
+                    <span>Stock Orders</span>
+                </a>
+
+    </section>
+
 
             <%@ include file="../components/topbar.jsp" %>
             
@@ -382,5 +403,6 @@
     });
 </script>
 </main>
+        </div>
 </body>
 </html>
