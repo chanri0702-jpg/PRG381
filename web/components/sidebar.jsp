@@ -104,11 +104,11 @@
 </aside>
 
 <!-- Session Timeout Modal -->
-<div id="session-timeout-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
-    <div style="background: var(--card-bg, #1e293b); padding: 30px; border-radius: 16px; border: 1px solid var(--card-border, rgba(255,255,255,0.1)); text-align: center; color: white; max-width: 380px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);">
-        <h3 style="margin-bottom: 12px; font-size: 20px;">Session Timeout</h3>
-        <p style="margin-bottom: 24px; color: #cbd5e1; font-size: 14px; line-height: 1.5;">Your session will expire in <strong id="timeout-countdown" style="color: #ef4444; font-size: 16px;">30</strong> seconds due to inactivity.</p>
-        <button id="stay-logged-in-btn" style="background: #6366f1; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; width: 100%; transition: background 0.2s;">Stay Logged In</button>
+<div id="session-timeout-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.3); z-index: 9999; align-items: center; justify-content: center; backdrop-filter: blur(4px);">
+    <div style="background: #ffffff; padding: 30px; border-radius: 16px; border: 1px solid #e2e8f0; text-align: center; color: #0f172a; max-width: 380px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);">
+        <h3 style="margin-bottom: 12px; font-size: 20px; color: #0f172a; font-weight: 600;">Session Timeout</h3>
+        <p style="margin-bottom: 24px; color: #64748b; font-size: 14px; line-height: 1.5;">Your session will expire in <strong id="timeout-countdown" style="color: #ef4444; font-size: 16px;">30</strong> seconds due to inactivity.</p>
+        <button id="stay-logged-in-btn" style="background: #2563eb; color: white; border: none; padding: 12px 24px; border-radius: 12px; cursor: pointer; font-weight: 600; width: 100%; transition: background 0.2s; font-family: 'Poppins', sans-serif;">Stay Logged In</button>
     </div>
 </div>
 
@@ -181,7 +181,7 @@
         document.onscroll = resetIfNoModal;
         
         // Add hover effect to the button via JS to keep it self-contained
-        stayBtn.addEventListener('mouseover', function() { this.style.background = '#4f46e5'; });
-        stayBtn.addEventListener('mouseout', function() { this.style.background = '#6366f1'; });
+        stayBtn.addEventListener('mouseover', function() { this.style.background = '#1d4ed8'; });
+        stayBtn.addEventListener('mouseout', function() { this.style.background = '#2563eb'; });
     })();
 </script>

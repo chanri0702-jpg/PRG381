@@ -49,6 +49,11 @@ public class AuthenticationFilter implements Filter {
             return;
         }
 
+        // Prevent browser caching of secure pages so back button does not show them after logout
+        httpResponse.setHeader("Cache-Control", "no-cache, no-store, must-revalidate"); // HTTP 1.1
+        httpResponse.setHeader("Pragma", "no-cache"); // HTTP 1.0
+        httpResponse.setDateHeader("Expires", 0); // Proxies
+
         String role = (String) session.getAttribute("userRole");
 
         // Role-Based Access Control (RBAC)

@@ -155,9 +155,9 @@
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
         }
 
-        /* Styling select dropdown options for dark theme */
+        /* Styling select dropdown options for light theme */
         select.form-control option {
-            background-color: #1e293b;
+            background-color: #ffffff;
             color: var(--text-main);
         }
 
