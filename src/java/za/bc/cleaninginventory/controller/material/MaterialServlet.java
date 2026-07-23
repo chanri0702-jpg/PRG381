@@ -21,6 +21,7 @@ public class MaterialServlet extends HttpServlet {
     @Override
     public void init() {
         materialService = new MaterialService();
+        System.out.println("=== MaterialServlet Initialized ===");
     }
 
     @Override
@@ -34,6 +35,11 @@ public class MaterialServlet extends HttpServlet {
         if (action == null || action.isBlank()) {
             action = "list";
         }
+
+        System.out.println("=== MaterialServlet.doGet() ===");
+        System.out.println("Action: " + action);
+        System.out.println("Request URI: " + request.getRequestURI());
+        System.out.println("Context Path: " + request.getContextPath());
 
         try {
             switch (action) {
@@ -64,6 +70,7 @@ public class MaterialServlet extends HttpServlet {
             }
 
         } catch (SQLException | IllegalArgumentException exception) {
+            exception.printStackTrace();
             throw new ServletException(
                     "Unable to process material request.",
                     exception
@@ -84,6 +91,9 @@ public class MaterialServlet extends HttpServlet {
         if (action == null || action.isBlank()) {
             action = "create";
         }
+
+        System.out.println("=== MaterialServlet.doPost() ===");
+        System.out.println("Action: " + action);
 
         try {
             switch (action) {
@@ -108,6 +118,7 @@ public class MaterialServlet extends HttpServlet {
             }
 
         } catch (SQLException exception) {
+            exception.printStackTrace();
             throw new ServletException(
                     "A material database operation failed.",
                     exception
@@ -120,20 +131,37 @@ public class MaterialServlet extends HttpServlet {
             HttpServletResponse response
     ) throws SQLException, ServletException, IOException {
 
-        List<Material> materials = materialService.getAllMaterials();
-        List<MaterialDAO.Supplier> suppliers = materialService.getDistinctSuppliers();
-        List<MaterialDAO.Campus> campuses = materialService.getDistinctCampuses();
+        System.out.println("=== listMaterials() called ===");
 
-        request.setAttribute("materials", materials);
-        request.setAttribute("suppliers", suppliers);
-        request.setAttribute("campuses", campuses);
-        request.setAttribute("lowStockCount", materialService.getLowStockCount());
-        request.setAttribute("totalMaterials", materialService.getTotalMaterialCount());
-        request.setAttribute("viewMode", "list");
+        try {
+            List<Material> materials = materialService.getAllMaterials();
+            List<MaterialDAO.Supplier> suppliers = materialService.getDistinctSuppliers();
+            List<MaterialDAO.Campus> campuses = materialService.getDistinctCampuses();
 
-        // Forward to /materials/materials.jsp
-        request.getRequestDispatcher("/materials/materials.jsp")
-                .forward(request, response);
+            System.out.println("Materials count: " + materials.size());
+            System.out.println("Suppliers count: " + suppliers.size());
+            System.out.println("Campuses count: " + campuses.size());
+
+            request.setAttribute("materials", materials);
+            request.setAttribute("suppliers", suppliers);
+            request.setAttribute("campuses", campuses);
+            request.setAttribute("lowStockCount", materialService.getLowStockCount());
+            request.setAttribute("totalMaterials", materialService.getTotalMaterialCount());
+            request.setAttribute("viewMode", "list");
+            
+            // Clear search parameters
+            request.setAttribute("searchTerm", "");
+            request.setAttribute("selectedSupplier", "All");
+            request.setAttribute("selectedCampus", "All");
+
+            System.out.println("Forwarding to /materials/materials.jsp with viewMode=list");
+            request.getRequestDispatcher("/materials/materials.jsp")
+                    .forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServletException("Error listing materials: " + e.getMessage(), e);
+        }
     }
 
     private void searchMaterials(
@@ -141,27 +169,64 @@ public class MaterialServlet extends HttpServlet {
             HttpServletResponse response
     ) throws SQLException, ServletException, IOException {
 
-        String searchTerm = request.getParameter("searchTerm");
-        String supplierId = request.getParameter("supplierId");
-        String campusId = request.getParameter("campusId");
+        System.out.println("=== searchMaterials() called ===");
 
-        List<Material> materials = materialService.searchMaterials(searchTerm, supplierId, campusId);
-        List<MaterialDAO.Supplier> suppliers = materialService.getDistinctSuppliers();
-        List<MaterialDAO.Campus> campuses = materialService.getDistinctCampuses();
+        try {
+            String searchTerm = request.getParameter("searchTerm");
+            String supplierId = request.getParameter("supplierId");
+            String campusId = request.getParameter("campusId");
 
-        request.setAttribute("materials", materials);
-        request.setAttribute("suppliers", suppliers);
-        request.setAttribute("campuses", campuses);
-        request.setAttribute("searchTerm", searchTerm);
-        request.setAttribute("selectedSupplier", supplierId);
-        request.setAttribute("selectedCampus", campusId);
-        request.setAttribute("lowStockCount", materialService.getLowStockCount());
-        request.setAttribute("totalMaterials", materialService.getTotalMaterialCount());
-        request.setAttribute("viewMode", "list");
+            System.out.println("Search params - searchTerm: " + searchTerm + ", supplierId: " + supplierId + ", campusId: " + campusId);
 
-        // Forward to /materials/materials.jsp
-        request.getRequestDispatcher("/materials/materials.jsp")
-                .forward(request, response);
+            // Set default values for null parameters
+            if (searchTerm == null || searchTerm.isBlank()) {
+                searchTerm = "";
+            }
+            if (supplierId == null || supplierId.isBlank()) {
+                supplierId = "All";
+            }
+            if (campusId == null || campusId.isBlank()) {
+                campusId = "All";
+            }
+
+            boolean hasSearchTerm = !searchTerm.trim().isEmpty();
+            boolean hasSupplier = !supplierId.equals("All");
+            boolean hasCampus = !campusId.equals("All");
+
+            System.out.println("Has search term: " + hasSearchTerm + ", Has supplier: " + hasSupplier + ", Has campus: " + hasCampus);
+
+            List<Material> materials;
+
+            if (hasSearchTerm || hasSupplier || hasCampus) {
+                materials = materialService.searchMaterials(searchTerm, supplierId, campusId);
+                System.out.println("Search returned " + materials.size() + " results");
+            } else {
+                materials = materialService.getAllMaterials();
+                System.out.println("No filters, returning all " + materials.size() + " materials");
+            }
+
+            List<MaterialDAO.Supplier> suppliers = materialService.getDistinctSuppliers();
+            List<MaterialDAO.Campus> campuses = materialService.getDistinctCampuses();
+
+            request.setAttribute("materials", materials);
+            request.setAttribute("suppliers", suppliers);
+            request.setAttribute("campuses", campuses);
+            request.setAttribute("searchTerm", searchTerm);
+            request.setAttribute("selectedSupplier", supplierId);
+            request.setAttribute("selectedCampus", campusId);
+            request.setAttribute("lowStockCount", materialService.getLowStockCount());
+            request.setAttribute("totalMaterials", materialService.getTotalMaterialCount());
+            request.setAttribute("viewMode", "list");
+
+            System.out.println("Forwarding to /materials/materials.jsp with viewMode=list (search results)");
+            request.getRequestDispatcher("/materials/materials.jsp")
+                    .forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Search error: " + e.getMessage());
+            listMaterials(request, response);
+        }
     }
 
     private void showAddPage(
@@ -169,12 +234,13 @@ public class MaterialServlet extends HttpServlet {
             HttpServletResponse response
     ) throws SQLException, ServletException, IOException {
 
+        System.out.println("=== showAddPage() called ===");
+
         request.setAttribute("suppliers", materialService.getDistinctSuppliers());
         request.setAttribute("campuses", materialService.getDistinctCampuses());
         request.setAttribute("isEdit", false);
         request.setAttribute("viewMode", "add");
 
-        // Forward to /materials/materials.jsp
         request.getRequestDispatcher("/materials/materials.jsp")
                 .forward(request, response);
     }
@@ -183,6 +249,8 @@ public class MaterialServlet extends HttpServlet {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws SQLException, ServletException, IOException {
+
+        System.out.println("=== showEditPage() called ===");
 
         Long materialId = getIdFromRequest(request);
 
@@ -202,7 +270,6 @@ public class MaterialServlet extends HttpServlet {
         request.setAttribute("isEdit", true);
         request.setAttribute("viewMode", "edit");
 
-        // Forward to /materials/materials.jsp
         request.getRequestDispatcher("/materials/materials.jsp")
                 .forward(request, response);
     }
@@ -211,6 +278,8 @@ public class MaterialServlet extends HttpServlet {
             HttpServletRequest request,
             HttpServletResponse response
     ) throws SQLException, ServletException, IOException {
+
+        System.out.println("=== showViewPage() called ===");
 
         Long materialId = getIdFromRequest(request);
 
@@ -227,7 +296,6 @@ public class MaterialServlet extends HttpServlet {
         request.setAttribute("material", material);
         request.setAttribute("viewMode", "view");
 
-        // Forward to /materials/materials.jsp
         request.getRequestDispatcher("/materials/materials.jsp")
                 .forward(request, response);
     }
@@ -314,7 +382,6 @@ public class MaterialServlet extends HttpServlet {
             request.setAttribute("isEdit", false);
             request.setAttribute("viewMode", "add");
 
-            // Forward to /materials/materials.jsp
             request.getRequestDispatcher("/materials/materials.jsp")
                     .forward(request, response);
         }
@@ -361,7 +428,6 @@ public class MaterialServlet extends HttpServlet {
             request.setAttribute("isEdit", true);
             request.setAttribute("viewMode", "edit");
 
-            // Forward to /materials/materials.jsp
             request.getRequestDispatcher("/materials/materials.jsp")
                     .forward(request, response);
         }

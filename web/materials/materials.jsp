@@ -134,18 +134,16 @@
             display: block;
         }
         
-        /* Fix for scrolling - override common.css */
         .main-content {
             flex: 1;
             display: flex;
             flex-direction: column;
-            overflow-y: auto !important; /* Allow vertical scrolling */
+            overflow-y: auto !important;
             overflow-x: hidden;
             padding: 35px 70px;
             height: 100vh;
         }
         
-        /* Ensure the parent container doesn't hide overflow */
         .parent-container {
             display: flex;
             height: 100vh;
@@ -153,7 +151,6 @@
             background: var(--background-color);
         }
         
-        /* Make the content area scrollable */
         .main-content > * {
             flex-shrink: 0;
         }
@@ -162,7 +159,6 @@
             flex-shrink: 0;
         }
         
-        /* Ensure table doesn't cause horizontal scroll issues */
         .table-card {
             overflow-x: auto;
         }
@@ -194,7 +190,6 @@
             }
         }
         
-        /* Fix for the page header to not take too much space */
         .page-header {
             flex-shrink: 0;
         }
@@ -202,12 +197,16 @@
 </head>
 <body>
     <div class="parent-container">
-        <!-- Include Sidebar from components directory -->
         <%@ include file="../components/sidebar.jsp" %>
         
         <main class="main-content">
-            <!-- Include Topbar from components directory -->
             <%@ include file="../components/topbar.jsp" %>
+            
+            <!-- Determine which view to show -->
+            <c:set var="viewMode" value="${viewMode}" />
+            <c:if test="${empty viewMode}">
+                <c:set var="viewMode" value="list" />
+            </c:if>
             
             <!-- Display Messages -->
             <c:if test="${not empty param.success}">
@@ -226,12 +225,6 @@
                 </div>
             </c:if>
             
-            <!-- Determine which view to show - using viewMode from servlet -->
-            <c:set var="viewMode" value="${viewMode}" />
-            <c:if test="${empty viewMode}">
-                <c:set var="viewMode" value="list" />
-            </c:if>
-            
             <!-- ============================================ -->
             <!-- LIST VIEW -->
             <!-- ============================================ -->
@@ -239,7 +232,7 @@
                 <div class="page-section active">
                     <div class="page-header">
                         <div class="page-header-text">
-                            <h1>Materials Management</h1>
+                            <h1></h1>
                             <p>Manage various items including cleaning stock, categories, reorder levels, search, filtering, and low-stock status.</p>
                         </div>
                         <div class="page-actions">
@@ -315,9 +308,14 @@
                                 <select id="supplierId" name="supplierId" style="width: 100%; padding: 10px; border: 1px solid #E2E8F0; border-radius: 16px;">
                                     <option value="All">All Suppliers</option>
                                     <c:forEach items="${suppliers}" var="supplier">
-                                        <option value="${supplier.busId}" ${selectedSupplier == supplier.busId ? 'selected' : ''}>
-                                            ${supplier.name}
-                                        </option>
+                                        <c:choose>
+                                            <c:when test="${selectedSupplier != null && selectedSupplier == supplier.busId.toString()}">
+                                                <option value="${supplier.busId}" selected>${supplier.name}</option>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <option value="${supplier.busId}">${supplier.name}</option>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </c:forEach>
                                 </select>
                             </div>
@@ -327,9 +325,14 @@
                                 <select id="campusId" name="campusId" style="width: 100%; padding: 10px; border: 1px solid #E2E8F0; border-radius: 16px;">
                                     <option value="All">All Campuses</option>
                                     <c:forEach items="${campuses}" var="campus">
-                                        <option value="${campus.campId}" ${selectedCampus == campus.campId ? 'selected' : ''}>
-                                            ${campus.name}
-                                        </option>
+                                        <c:choose>
+                                            <c:when test="${selectedCampus != null && selectedCampus == campus.campId.toString()}">
+                                                <option value="${campus.campId}" selected>${campus.name}</option>
+                                            </c:when>
+                                            <c:otherwise>
+                                                <option value="${campus.campId}">${campus.name}</option>
+                                            </c:otherwise>
+                                        </c:choose>
                                     </c:forEach>
                                 </select>
                             </div>
