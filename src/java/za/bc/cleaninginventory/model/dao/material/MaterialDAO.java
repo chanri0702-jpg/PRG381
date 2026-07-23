@@ -8,18 +8,18 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MaterialDAO {
+public class MaterialDAO{
 
-    // Create - Add new product
-    public boolean createMaterial(Material material) {
+    //Create - Add new product
+    public boolean createMaterial(Material material){
         String productSql = "INSERT INTO products (bus_id, name, price, description) VALUES (?, ?, ?, ?)";
         Connection conn = null;
         
-        try {
+        try{
             conn = ConnectionPool.getConnection();
             conn.setAutoCommit(false);
             
-            try (PreparedStatement pstmt = conn.prepareStatement(productSql, Statement.RETURN_GENERATED_KEYS)) {
+            try (PreparedStatement pstmt = conn.prepareStatement(productSql, Statement.RETURN_GENERATED_KEYS)){
                 pstmt.setLong(1, material.getBusId());
                 pstmt.setString(2, material.getName());
                 pstmt.setBigDecimal(3, material.getPrice());
@@ -27,14 +27,15 @@ public class MaterialDAO {
                 
                 int affectedRows = pstmt.executeUpdate();
                 
-                if (affectedRows > 0) {
-                    try (ResultSet rs = pstmt.getGeneratedKeys()) {
-                        if (rs.next()) {
+                if (affectedRows > 0){
+                    try (ResultSet rs = pstmt.getGeneratedKeys()){
+                        if (rs.next()){
                             Long prodId = rs.getLong(1);
                             material.setProdId(prodId);
                             
-                            // Also add stock for the campus
-                            if (material.getCampId() != null && material.getStockQuantity() != null) {
+                            //Also add stock for the campus
+                            if (material.getCampId() != null && material.getCampId() > 0 && 
+                                material.getStockQuantity() != null && material.getStockQuantity() > 0){
                                 addStockForCampus(conn, prodId, material.getCampId(), material.getStockQuantity());
                             }
                             
@@ -48,34 +49,34 @@ public class MaterialDAO {
                 return false;
             }
             
-        } catch (SQLException e) {
-            try {
-                if (conn != null) {
+        } catch (SQLException e){
+            try{
+                if (conn != null){
                     conn.rollback();
                 }
-            } catch (SQLException rollbackEx) {
+            } catch (SQLException rollbackEx){
                 rollbackEx.printStackTrace();
             }
             e.printStackTrace();
             return false;
-        } finally {
-            try {
-                if (conn != null) {
+        } finally{
+            try{
+                if (conn != null){
                     conn.setAutoCommit(true);
                     conn.close();
                 }
-            } catch (SQLException e) {
+            } catch (SQLException e){
                 e.printStackTrace();
             }
         }
     }
 
-    // Helper method to add stock for a campus
-    private void addStockForCampus(Connection conn, Long prodId, Integer campId, Integer quantity) throws SQLException {
+    //Helper method to add stock for a campus
+    private void addStockForCampus(Connection conn, Long prodId, Integer campId, Integer quantity) throws SQLException{
         String stockSql = "INSERT INTO product_stock (prod_id, camp_id, stock) VALUES (?, ?, ?) " +
                          "ON CONFLICT (prod_id, camp_id) DO UPDATE SET stock = product_stock.stock + ?";
         
-        try (PreparedStatement pstmt = conn.prepareStatement(stockSql)) {
+        try (PreparedStatement pstmt = conn.prepareStatement(stockSql)){
             pstmt.setLong(1, prodId);
             pstmt.setInt(2, campId);
             pstmt.setInt(3, quantity);
@@ -84,10 +85,11 @@ public class MaterialDAO {
         }
     }
 
-    // Read - Get material by ID
-    public Material getMaterialById(Long prodId) {
+    //Read - Get material by ID
+    public Material getMaterialById(Long prodId){
         String sql = "SELECT p.prod_id, p.bus_id, p.name, p.price, p.description, " +
-                     "ps.stock, ps.camp_id, sb.name as supplier_name, c.name as campus_name " +
+                     "COALESCE(ps.stock, 0) as stock, COALESCE(ps.camp_id, 0) as camp_id, " +
+                     "sb.name as supplier_name, c.name as campus_name " +
                      "FROM products p " +
                      "LEFT JOIN product_stock ps ON p.prod_id = ps.prod_id " +
                      "LEFT JOIN supplier_businesses sb ON p.bus_id = sb.bus_id " +
@@ -95,26 +97,27 @@ public class MaterialDAO {
                      "WHERE p.prod_id = ?";
         
         try (Connection conn = ConnectionPool.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)){
             
             pstmt.setLong(1, prodId);
-            try (ResultSet rs = pstmt.executeQuery()) {
-                if (rs.next()) {
+            try (ResultSet rs = pstmt.executeQuery()){
+                if (rs.next()){
                     return mapResultSetToMaterial(rs);
                 }
             }
             
-        } catch (SQLException e) {
+        } catch (SQLException e){
             e.printStackTrace();
         }
         return null;
     }
 
-    // Read - Get all materials
-    public List<Material> getAllMaterials() {
+    //Read - Get all materials
+    public List<Material> getAllMaterials(){
         List<Material> materials = new ArrayList<>();
         String sql = "SELECT p.prod_id, p.bus_id, p.name, p.price, p.description, " +
-                     "ps.stock, ps.camp_id, sb.name as supplier_name, c.name as campus_name " +
+                     "COALESCE(ps.stock, 0) as stock, COALESCE(ps.camp_id, 0) as camp_id, " +
+                     "sb.name as supplier_name, c.name as campus_name " +
                      "FROM products p " +
                      "LEFT JOIN product_stock ps ON p.prod_id = ps.prod_id " +
                      "LEFT JOIN supplier_businesses sb ON p.bus_id = sb.bus_id " +
@@ -123,24 +126,25 @@ public class MaterialDAO {
         
         try (Connection conn = ConnectionPool.getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             ResultSet rs = stmt.executeQuery(sql)){
             
-            while (rs.next()) {
+            while (rs.next()){
                 materials.add(mapResultSetToMaterial(rs));
             }
             
-        } catch (SQLException e) {
+        } catch (SQLException e){
             e.printStackTrace();
         }
         return materials;
     }
 
-    // Read - Get materials with search and filtering
-    public List<Material> searchMaterials(String searchTerm, String supplierId, String campusId) {
+    //Read - Get materials with search and filtering
+    public List<Material> searchMaterials(String searchTerm, String supplierId, String campusId){
         List<Material> materials = new ArrayList<>();
         StringBuilder sql = new StringBuilder(
             "SELECT p.prod_id, p.bus_id, p.name, p.price, p.description, " +
-            "ps.stock, ps.camp_id, sb.name as supplier_name, c.name as campus_name " +
+            "COALESCE(ps.stock, 0) as stock, COALESCE(ps.camp_id, 0) as camp_id, " +
+            "sb.name as supplier_name, c.name as campus_name " +
             "FROM products p " +
             "LEFT JOIN product_stock ps ON p.prod_id = ps.prod_id " +
             "LEFT JOIN supplier_businesses sb ON p.bus_id = sb.bus_id " +
@@ -150,19 +154,19 @@ public class MaterialDAO {
         
         List<Object> params = new ArrayList<>();
         
-        if (searchTerm != null && !searchTerm.trim().isEmpty()) {
+        if (searchTerm != null && !searchTerm.trim().isEmpty()){
             sql.append(" AND (LOWER(p.name) LIKE ? OR LOWER(p.description) LIKE ?) ");
             String searchPattern = "%" + searchTerm.toLowerCase() + "%";
             params.add(searchPattern);
             params.add(searchPattern);
         }
         
-        if (supplierId != null && !supplierId.trim().isEmpty() && !supplierId.equals("All")) {
+        if (supplierId != null && !supplierId.trim().isEmpty() && !supplierId.equals("All")){
             sql.append(" AND p.bus_id = ? ");
             params.add(Long.parseLong(supplierId));
         }
         
-        if (campusId != null && !campusId.trim().isEmpty() && !campusId.equals("All")) {
+        if (campusId != null && !campusId.trim().isEmpty() && !campusId.equals("All")){
             sql.append(" AND ps.camp_id = ? ");
             params.add(Integer.parseInt(campusId));
         }
@@ -170,26 +174,26 @@ public class MaterialDAO {
         sql.append(" ORDER BY p.name");
         
         try (Connection conn = ConnectionPool.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql.toString())) {
+             PreparedStatement pstmt = conn.prepareStatement(sql.toString())){
             
-            for (int i = 0; i < params.size(); i++) {
+            for (int i = 0; i < params.size(); i++){
                 pstmt.setObject(i + 1, params.get(i));
             }
             
-            try (ResultSet rs = pstmt.executeQuery()) {
-                while (rs.next()) {
+            try (ResultSet rs = pstmt.executeQuery()){
+                while (rs.next()){
                     materials.add(mapResultSetToMaterial(rs));
                 }
             }
             
-        } catch (SQLException e) {
+        } catch (SQLException e){
             e.printStackTrace();
         }
         return materials;
     }
 
-    // Read - Get low stock materials
-    public List<Material> getLowStockMaterials() {
+    //Read - Get low stock materials
+    public List<Material> getLowStockMaterials(){
         List<Material> materials = new ArrayList<>();
         String sql = "SELECT p.prod_id, p.bus_id, p.name, p.price, p.description, " +
                      "ps.stock, ps.camp_id, sb.name as supplier_name, c.name as campus_name " +
@@ -202,25 +206,25 @@ public class MaterialDAO {
         
         try (Connection conn = ConnectionPool.getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             ResultSet rs = stmt.executeQuery(sql)){
             
-            while (rs.next()) {
+            while (rs.next()){
                 materials.add(mapResultSetToMaterial(rs));
             }
             
-        } catch (SQLException e) {
+        } catch (SQLException e){
             e.printStackTrace();
         }
         return materials;
     }
 
-    // Update - Update material details
-    public boolean updateMaterial(Material material) {
+    //Update - Update material details
+    public boolean updateMaterial(Material material){
         String sql = "UPDATE products SET name = ?, description = ?, price = ?, bus_id = ? " +
                      "WHERE prod_id = ?";
         
         try (Connection conn = ConnectionPool.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)){
             
             pstmt.setString(1, material.getName());
             pstmt.setString(2, material.getDescription());
@@ -228,131 +232,194 @@ public class MaterialDAO {
             pstmt.setLong(4, material.getBusId());
             pstmt.setLong(5, material.getProdId());
             
-            return pstmt.executeUpdate() > 0;
+            int rowsUpdated = pstmt.executeUpdate();
+            System.out.println("updateMaterial rows updated: " + rowsUpdated);
+            return rowsUpdated > 0;
             
-        } catch (SQLException e) {
+        } catch (SQLException e){
             e.printStackTrace();
             return false;
         }
     }
 
-    // Update stock quantity for a specific campus
-    public boolean updateStockQuantity(Long prodId, Integer campId, int newQuantity) {
-        String sql = "UPDATE product_stock SET stock = ? WHERE prod_id = ? AND camp_id = ?";
+    //Update stock quantity for a specific campus - FIXED to handle campus changes
+    public boolean updateStockQuantity(Long prodId, Integer campId, int newQuantity){
+        //First, get the current campus for this product
+        String currentCampusSql = "SELECT camp_id FROM product_stock WHERE prod_id = ?";
+        Integer currentCampId = null;
         
-        try (Connection conn = ConnectionPool.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+        try (Connection conn = ConnectionPool.getConnection()){
+            //Find the current campus
+            try (PreparedStatement pstmt = conn.prepareStatement(currentCampusSql)){
+                pstmt.setLong(1, prodId);
+                try (ResultSet rs = pstmt.executeQuery()){
+                    if (rs.next()){
+                        currentCampId = rs.getInt("camp_id");
+                    }
+                }
+            }
             
-            pstmt.setInt(1, newQuantity);
-            pstmt.setLong(2, prodId);
-            pstmt.setInt(3, campId);
+            System.out.println("Current camp_id: " + currentCampId + ", New camp_id: " + campId);
             
-            return pstmt.executeUpdate() > 0;
+            //If the campus is changing, we need to handle it differently
+            if (currentCampId != null && !currentCampId.equals(campId)){
+                //Campus is changing - update the existing record's campus
+                String updateCampusSql = "UPDATE product_stock SET camp_id = ?, stock = ? WHERE prod_id = ?";
+                try (PreparedStatement pstmt = conn.prepareStatement(updateCampusSql)){
+                    pstmt.setInt(1, campId);
+                    pstmt.setInt(2, newQuantity);
+                    pstmt.setLong(3, prodId);
+                    int rows = pstmt.executeUpdate();
+                    System.out.println("Campus updated, rows affected: " + rows);
+                    return rows > 0;
+                }
+            } else{
+                //Campus is the same - just update the stock
+                String checkSql = "SELECT COUNT(*) FROM product_stock WHERE prod_id = ? AND camp_id = ?";
+                String updateSql = "UPDATE product_stock SET stock = ? WHERE prod_id = ? AND camp_id = ?";
+                String insertSql = "INSERT INTO product_stock (prod_id, camp_id, stock) VALUES (?, ?, ?)";
+                
+                //Check if record exists
+                boolean exists = false;
+                try (PreparedStatement checkStmt = conn.prepareStatement(checkSql)){
+                    checkStmt.setLong(1, prodId);
+                    checkStmt.setInt(2, campId);
+                    try (ResultSet rs = checkStmt.executeQuery()){
+                        if (rs.next()){
+                            exists = rs.getInt(1) > 0;
+                        }
+                    }
+                }
+                
+                System.out.println("Stock record exists: " + exists);
+                
+                if (exists){
+                    //Update existing record
+                    try (PreparedStatement pstmt = conn.prepareStatement(updateSql)){
+                        pstmt.setInt(1, newQuantity);
+                        pstmt.setLong(2, prodId);
+                        pstmt.setInt(3, campId);
+                        int rows = pstmt.executeUpdate();
+                        System.out.println("Stock updated, rows affected: " + rows);
+                        return rows > 0;
+                    }
+                } else{
+                    //Insert new record
+                    try (PreparedStatement pstmt = conn.prepareStatement(insertSql)){
+                        pstmt.setLong(1, prodId);
+                        pstmt.setInt(2, campId);
+                        pstmt.setInt(3, newQuantity);
+                        int rows = pstmt.executeUpdate();
+                        System.out.println("New stock record inserted, rows affected: " + rows);
+                        return rows > 0;
+                    }
+                }
+            }
             
-        } catch (SQLException e) {
+        } catch (SQLException e){
             e.printStackTrace();
             return false;
         }
     }
 
-    // Delete - Delete material (cascade will handle product_stock)
-    public boolean deleteMaterial(Long prodId) {
+    //Delete - Delete material (cascade will handle product_stock)
+    public boolean deleteMaterial(Long prodId){
         String sql = "DELETE FROM products WHERE prod_id = ?";
         
         try (Connection conn = ConnectionPool.getConnection();
-             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+             PreparedStatement pstmt = conn.prepareStatement(sql)){
             
             pstmt.setLong(1, prodId);
             return pstmt.executeUpdate() > 0;
             
-        } catch (SQLException e) {
+        } catch (SQLException e){
             e.printStackTrace();
             return false;
         }
     }
 
-    // Get distinct suppliers
-    public List<Supplier> getDistinctSuppliers() {
+    //Get distinct suppliers
+    public List<Supplier> getDistinctSuppliers(){
         List<Supplier> suppliers = new ArrayList<>();
         String sql = "SELECT bus_id, name FROM supplier_businesses ORDER BY name";
         
         try (Connection conn = ConnectionPool.getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             ResultSet rs = stmt.executeQuery(sql)){
             
-            while (rs.next()) {
+            while (rs.next()){
                 Supplier supplier = new Supplier();
                 supplier.setBusId(rs.getLong("bus_id"));
                 supplier.setName(rs.getString("name"));
                 suppliers.add(supplier);
             }
             
-        } catch (SQLException e) {
+        } catch (SQLException e){
             e.printStackTrace();
         }
         return suppliers;
     }
 
-    // Get distinct campuses
-    public List<Campus> getDistinctCampuses() {
+    //Get distinct campuses
+    public List<Campus> getDistinctCampuses(){
         List<Campus> campuses = new ArrayList<>();
         String sql = "SELECT camp_id, name FROM campuses ORDER BY name";
         
         try (Connection conn = ConnectionPool.getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             ResultSet rs = stmt.executeQuery(sql)){
             
-            while (rs.next()) {
+            while (rs.next()){
                 Campus campus = new Campus();
                 campus.setCampId(rs.getInt("camp_id"));
                 campus.setName(rs.getString("name"));
                 campuses.add(campus);
             }
             
-        } catch (SQLException e) {
+        } catch (SQLException e){
             e.printStackTrace();
         }
         return campuses;
     }
 
-    // Count total materials
-    public int getTotalMaterialCount() {
+    //Count total materials
+    public int getTotalMaterialCount(){
         String sql = "SELECT COUNT(*) FROM products";
         
         try (Connection conn = ConnectionPool.getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             ResultSet rs = stmt.executeQuery(sql)){
             
-            if (rs.next()) {
+            if (rs.next()){
                 return rs.getInt(1);
             }
             
-        } catch (SQLException e) {
+        } catch (SQLException e){
             e.printStackTrace();
         }
         return 0;
     }
 
-    // Count low stock items
-    public int getLowStockCount() {
+    //Count low stock items
+    public int getLowStockCount(){
         String sql = "SELECT COUNT(*) FROM product_stock WHERE stock <= 10";
         
         try (Connection conn = ConnectionPool.getConnection();
              Statement stmt = conn.createStatement();
-             ResultSet rs = stmt.executeQuery(sql)) {
+             ResultSet rs = stmt.executeQuery(sql)){
             
-            if (rs.next()) {
+            if (rs.next()){
                 return rs.getInt(1);
             }
             
-        } catch (SQLException e) {
+        } catch (SQLException e){
             e.printStackTrace();
         }
         return 0;
     }
 
-    // Helper method to map ResultSet to Material object
-    private Material mapResultSetToMaterial(ResultSet rs) throws SQLException {
+    //Helper method to map ResultSet to Material object
+    private Material mapResultSetToMaterial(ResultSet rs) throws SQLException{
         Material material = new Material();
         material.setProdId(rs.getLong("prod_id"));
         material.setBusId(rs.getLong("bus_id"));
@@ -366,25 +433,25 @@ public class MaterialDAO {
         return material;
     }
 
-    // Inner class for Supplier
-    public static class Supplier {
+    //Inner class for Supplier
+    public static class Supplier{
         private Long busId;
         private String name;
 
-        public Long getBusId() { return busId; }
-        public void setBusId(Long busId) { this.busId = busId; }
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
+        public Long getBusId(){ return busId; }
+        public void setBusId(Long busId){ this.busId = busId; }
+        public String getName(){ return name; }
+        public void setName(String name){ this.name = name; }
     }
 
-    // Inner class for Campus
-    public static class Campus {
+    //Inner class used for Campus
+    public static class Campus{
         private Integer campId;
         private String name;
 
-        public Integer getCampId() { return campId; }
-        public void setCampId(Integer campId) { this.campId = campId; }
-        public String getName() { return name; }
-        public void setName(String name) { this.name = name; }
+        public Integer getCampId(){ return campId; }
+        public void setCampId(Integer campId){ this.campId = campId; }
+        public String getName(){ return name; }
+        public void setName(String name){ this.name = name; }
     }
 }
