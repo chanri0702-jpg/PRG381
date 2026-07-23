@@ -181,11 +181,10 @@
 
     flex-direction:column;
 
-    overflow-y: auto;
+    overflow-y: auto !important;
 
     padding:35px 70px;
     
-    height:100vh;
 
 }
 
