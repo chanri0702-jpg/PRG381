@@ -63,8 +63,10 @@ public class EmailService {
             EXECUTOR.submit(() -> {
                 try {
                     sendUrgentRequestNotification(toEmail, requesterName, productName, quantity, description);
-                } catch (MessagingException e) {
-                    System.err.println("Failed to send urgent request email to " + toEmail + ": " + e.getMessage());
+                    System.err.println("[URGENT EMAIL] Successfully sent to " + toEmail);
+                } catch (Throwable t) {
+                    System.err.println("[URGENT EMAIL] FAILED to send to " + toEmail + ": " + t);
+                    t.printStackTrace();
                 }
             });
         }
