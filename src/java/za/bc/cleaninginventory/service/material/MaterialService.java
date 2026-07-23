@@ -15,14 +15,14 @@ public class MaterialService{
         this.materialDAO = new MaterialDAO();
     }
     
-    //Create the material with validation added
+   //Create material with validation
     public boolean createMaterial(Material material){
-        // Validate material before its creation
+       //Validate material before creation
         if (!validateMaterial(material)){
             return false;
         }
         
-        //Check for any possible duplicate names
+       //Check for duplicate name
         if (isMaterialNameExists(material.getName(), null)){
             return false;
         }
@@ -30,7 +30,7 @@ public class MaterialService{
         return materialDAO.createMaterial(material);
     }
     
-    //Get the materials ID
+   //Get material by ID
     public Material getMaterialById(Long prodId){
         if (prodId == null || prodId <= 0){
             return null;
@@ -38,43 +38,64 @@ public class MaterialService{
         return materialDAO.getMaterialById(prodId);
     }
     
-    //Get all the materials saved
+   //Get all materials
     public List<Material> getAllMaterials(){
         return materialDAO.getAllMaterials();
     }
     
-    //Search for materials with filters applied
+   //Search materials with filters
     public List<Material> searchMaterials(String searchTerm, String supplierId, String campusId){
         return materialDAO.searchMaterials(searchTerm, supplierId, campusId);
     }
     
-    //Display all low stock materials
+   //Get low stock materials
     public List<Material> getLowStockMaterials(){
         return materialDAO.getLowStockMaterials();
     }
     
-    //Update the materials with validation
+   //Update material with validation - FIXED
     public boolean updateMaterial(Material material){
-        // Validate material before update
+       //Validate material before update
         if (!validateMaterial(material)){
+            System.out.println("Material validation failed");
             return false;
         }
         
-        //Check for duplicate name (excluding current material) saved
+       //Check for duplicate name (excluding current material)
         if (isMaterialNameExists(material.getName(), material.getProdId())){
+            System.out.println("Duplicate name found");
             return false;
         }
         
-        return materialDAO.updateMaterial(material);
+       //First update the product details
+        boolean productUpdated = materialDAO.updateMaterial(material);
+        System.out.println("Product updated: " + productUpdated);
+        
+        if (!productUpdated){
+            return false;
+        }
+        
+       //Then update stock quantity if provided
+        boolean stockUpdated = true;
+        if (material.getStockQuantity() != null && material.getCampId() != null && material.getCampId() > 0){
+            stockUpdated = materialDAO.updateStockQuantity(
+                material.getProdId(), 
+                material.getCampId(), 
+                material.getStockQuantity()
+            );
+            System.out.println("Stock updated: " + stockUpdated);
+        }
+        
+        return productUpdated && stockUpdated;
     }
     
-    //Delete the selected material
+   //Delete material
     public boolean deleteMaterial(Long prodId){
         if (prodId == null || prodId <= 0){
             return false;
         }
         
-        //Check if the material exists
+       //Check if material exists
         Material existingMaterial = materialDAO.getMaterialById(prodId);
         if (existingMaterial == null){
             return false;
@@ -83,7 +104,7 @@ public class MaterialService{
         return materialDAO.deleteMaterial(prodId);
     }
     
-    //Update stocks quantity with validation
+   //Update stock quantity with validation
     public boolean updateStockQuantity(Long prodId, Integer campId, int newQuantity){
         if (prodId == null || prodId <= 0 || campId == null || campId <= 0){
             return false;
@@ -96,27 +117,27 @@ public class MaterialService{
         return materialDAO.updateStockQuantity(prodId, campId, newQuantity);
     }
     
-    //Get distinct (unique) suppliers
+   //Get distinct suppliers
     public List<MaterialDAO.Supplier> getDistinctSuppliers(){
         return materialDAO.getDistinctSuppliers();
     }
     
-    //Get distinct (unique) campuses
+   //Get distinct campuses
     public List<MaterialDAO.Campus> getDistinctCampuses(){
         return materialDAO.getDistinctCampuses();
     }
     
-    //Get total material by count
+   //Get total material count
     public int getTotalMaterialCount(){
         return materialDAO.getTotalMaterialCount();
     }
     
-    //Get low stock total by count
+   //Get low stock count
     public int getLowStockCount(){
         return materialDAO.getLowStockCount();
     }
     
-    //Check if the material name exists (for duplicate validation)
+   //Check if material name exists (for duplicate validation)
     public boolean isMaterialNameExists(String name, Long excludeProdId){
         List<Material> materials = materialDAO.getAllMaterials();
         return materials.stream()
@@ -124,45 +145,45 @@ public class MaterialService{
                               (excludeProdId == null || !m.getProdId().equals(excludeProdId)));
     }
     
-    //Validation for material
+   //Validate material
     private boolean validateMaterial(Material material){
-        // Check for null
+       //Check for null
         if (material == null){
             return false;
         }
         
-        //Validate material name (required, min 2 chars, max 150 chars)
+       //Validate name (required, min 2 chars, max 150 chars)
         if (!ValidationUtil.isValidString(material.getName(), 2, 150)){
             return false;
         }
         
-        //Validate the description (optional, max 1000 chars)
+       //Validate description (optional, max 1000 chars)
         if (material.getDescription() != null && 
             !ValidationUtil.isValidString(material.getDescription(), 0, 1000)){
             return false;
         }
         
-        //Validate the price (must be positive)
+       //Validate price (must be positive)
         if (material.getPrice() == null || 
             !ValidationUtil.isValidPositive(material.getPrice().doubleValue())){
             return false;
         }
         
-        //Validate the supplier ID (must be positive)
+       //Validate supplier ID (must be positive)
         if (material.getBusId() == null || material.getBusId() <= 0){
             return false;
         }
         
-        //Validate the stock quantity (must be non-negative)
+       //Stock is optional for validation (can be null)
         if (material.getStockQuantity() != null && 
-            !ValidationUtil.isValidPositiveOrZero(material.getStockQuantity())){
+            material.getStockQuantity() < 0){
             return false;
         }
         
         return true;
     }
     
-    //Check if the material has sufficient stock available
+   //Check if material has sufficient stock
     public boolean hasSufficientStock(Long prodId, Integer campId, int requestedQuantity){
         Material material = getMaterialById(prodId);
         if (material == null || material.getCampId() == null || !material.getCampId().equals(campId)){
@@ -171,7 +192,7 @@ public class MaterialService{
         return material.hasStock(requestedQuantity);
     }
     
-    //Deduct total stock (used when issuing materials)
+   //Deduct stock (used when issuing materials)
     public boolean deductStock(Long prodId, Integer campId, int quantity){
         Material material = getMaterialById(prodId);
         if (material == null || !material.hasStock(quantity) || material.getCampId() == null){
@@ -182,7 +203,7 @@ public class MaterialService{
         return materialDAO.updateStockQuantity(prodId, campId, material.getStockQuantity());
     }
     
-    //Add to stock (used when restocking)
+   //Add stock (applicable when restocking)
     public boolean addStock(Long prodId, Integer campId, int quantity){
         Material material = getMaterialById(prodId);
         if (material == null || quantity <= 0 || material.getCampId() == null){
