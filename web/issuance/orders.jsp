@@ -14,6 +14,11 @@
 <%@ page import="za.bc.cleaninginventory.model.entity.Order" %>
 <%@ page import="za.bc.cleaninginventory.model.entity.Product" %>
 <%
+    request.setAttribute("pageTitle", "Orders");
+    request.setAttribute("activePage","orders");
+%>
+
+<%
     List<Request> pendingRequests = (List<Request>) request.getAttribute("pendingRequests");
     List<Order> orderHistory = (List<Order>) request.getAttribute("orderHistory");
     Map<Integer, String> campuses = (Map<Integer, String>) request.getAttribute("campuses");
@@ -57,10 +62,9 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
-     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/issuance.css">
 
 </head>
 
@@ -77,12 +81,7 @@
             <div class="dashboard-content">
             
               
-<div class="container py-4">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Orders</h2>
-       
-    </div>
+<div >
 
     <% if (successMessage != null) { %>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -132,14 +131,15 @@
     <script type="application/json" id="products-<%= bkey %>"><%= productJson.toString() %></script>
 
     <div class="card mb-4">
-        <div class="card-header bg-dark text-white">
-            <%= businessName %>
+        <div class="card-header bg-white text-dark">
+            <h4><%= businessName %> </h4>
+            
         </div>
         <div class="card-body p-0">
             <form method="post" action="orders" id="<%= formId %>" data-order-form>
                 <div class="table-responsive">
                     <table class="table table-hover mb-0 align-middle">
-                        <thead class="table-light">
+                        <thead class="">
                             <tr>
                                 <th class="col-checkbox"></th>
                                 <th>Req #</th>
@@ -224,8 +224,9 @@
 
     <!-- Order History, grouped per order -->
     <div class="card">
-        <div class="card-header bg-dark text-white">
-            Order History
+        <div class="card-header bg-white text-dark">
+            <h4>Order History </h4>
+            
         </div>
         <div class="card-body">
             <%
@@ -380,5 +381,6 @@
         });
     });
 </script>
+</main>
 </body>
 </html>

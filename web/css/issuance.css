@@ -36,3 +36,332 @@
     padding: 1rem;
     margin-bottom: 1rem;
 }
+
+.table{
+    background: #F8FAFC;
+    --table-hover: #F1F5F9;
+}
+
+/*==================================================
+    CARD HEADERS (overrides Bootstrap bg-dark)
+==================================================*/
+
+.card-header.bg-dark{
+
+    background:var(--heading-color) !important;
+
+    border-top-left-radius:var(--radius);
+
+    border-top-right-radius:var(--radius);
+
+    border-bottom:none;
+
+    font-weight:600;
+
+    padding:16px 20px;
+
+}
+
+
+/*==================================================
+    ALERTS (match theme status colours)
+==================================================*/
+
+.alert-success{
+    background:#DCFCE7;
+    color:#15803D;
+    border:1px solid #BBF7D0;
+    border-radius:var(--radius);
+}
+
+.alert-danger{
+    background:#FEE2E2;
+    color:#B91C1C;
+    border:1px solid #FECACA;
+    border-radius:var(--radius);
+}
+
+
+/*==================================================
+    BADGES (map Bootstrap bg-* onto theme badges)
+==================================================*/
+
+.badge.bg-success{ background:#DCFCE7 !important; color:#15803D !important; }
+.badge.bg-danger{  background:#FEE2E2 !important; color:#B91C1C !important; }
+.badge.bg-warning{ background:#FEF3C7 !important; color:#B45309 !important; }
+.badge.bg-info{    background:#DBEAFE !important; color:#1D4ED8 !important; }
+.badge.bg-primary{ background:#DBEAFE !important; color:#1D4ED8 !important; }
+.badge.bg-secondary{ background:#E5E7EB !important; color:#374151 !important; }
+
+
+/*==================================================
+    ORDERS TABLE COLUMN WIDTHS
+==================================================*/
+
+.col-checkbox{ width:36px; }
+.col-qty{ width:110px; }
+.col-price{ width:120px; }
+.col-campus{ width:140px; }
+.col-total{ width:110px; font-weight:600; }
+.col-actions{ width:90px; }
+
+.line-total,
+.form-total{
+    color:var(--primary-color);
+}
+
+
+/*==================================================
+    ORDER HISTORY ITEMS
+==================================================*/
+
+.order-history-item{
+
+    border:1px solid var(--border-color);
+
+    border-radius:var(--radius);
+
+    padding:20px;
+
+    margin-bottom:16px;
+
+}
+
+.order-history-item:last-child{
+    margin-bottom:0;
+}
+
+.main-content{
+
+    flex:1;
+
+    display:flex;
+
+    flex-direction:column;
+
+    overflow-y: auto;
+
+    padding:35px 70px;
+
+}
+
+.id-pill{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    min-width:38px;
+    height:38px;
+    padding:0 10px;
+    background:#EEF5FF;
+    color:var(--primary-color);
+    border-radius:50px;
+    font-weight:600;
+    font-size:13px;
+}
+
+/* Square-ish icon tile, e.g. building icon next to business name */
+.entity-icon{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:38px;
+    height:38px;
+    background:#EEF5FF;
+    color:var(--primary-color);
+    border-radius:12px;
+    font-size:15px;
+    flex-shrink:0;
+}
+
+/* Wrapper to line up icon tile + name/description */
+.entity-cell{
+    display:flex;
+    align-items:flex-start;
+    gap:14px;
+}
+
+.entity-cell .entity-title{
+    color:var(--heading-color);
+    font-weight:600;
+    font-size:14.5px;
+}
+
+.entity-cell .entity-subtitle{
+    color:var(--text-color);
+    font-size:13px;
+    margin-top:2px;
+}
+
+/* Secondary label used above a bold value, e.g. "Pretoria" above "Gauteng" */
+.cell-primary{
+    color:var(--heading-color);
+    font-weight:600;
+    font-size:14px;
+}
+
+.cell-secondary{
+    color:var(--text-color);
+    font-size:13px;
+    margin-top:2px;
+}
+
+.cell-with-icon{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:13.5px;
+    color:var(--text-color);
+}
+
+.cell-with-icon i{
+    color:var(--primary-color);
+    width:14px;
+}
+
+/* Round icon-only action buttons */
+.action-icon-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:34px;
+    height:34px;
+    border-radius:50%;
+    border:none;
+    cursor:pointer;
+    font-size:13px;
+}
+
+.action-icon-btn:hover{
+    transform:translateY(-2px);
+}
+
+.action-icon-btn.action-view{
+    background:#DBEAFE;
+    color:#1D4ED8;
+}
+
+.action-icon-btn.action-edit{
+    background:#FEF3C7;
+    color:#B45309;
+}
+
+.action-icon-btn.action-delete{
+    background:#FEE2E2;
+    color:#B91C1C;
+}
+
+.action-group{
+    display:flex;
+    gap:8px;
+}
+
+/* Header round accent button, e.g. the truck icon top-right */
+.header-icon-btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    width:44px;
+    height:44px;
+    background:#EEF5FF;
+    color:var(--primary-color);
+    border-radius:14px;
+    border:none;
+    cursor:pointer;
+    font-size:17px;
+}
+
+.header-icon-btn:hover{
+    background:#DBEAFE;
+}
+
+.dashboard-content::-webkit-scrollbar{
+    width:8px;
+}
+.dashboard-content::-webkit-scrollbar-thumb{
+    background:var(--border-color);
+    border-radius:8px;
+}
+.dashboard-content::-webkit-scrollbar-track{
+    background:transparent;
+}
+
+.menu{
+
+    list-style:none !important;
+
+    padding:0 15px !important;
+
+}
+
+.menu li{
+
+    margin-bottom:8px !important;
+    border-radius:14px !important;
+    
+}
+
+.menu li a{
+
+    display:flex !important;
+
+    align-items:center !important;
+
+    gap:15px !important;
+
+    padding:14px 18px !important;
+
+    border-radius:14px !important;
+
+    color:#64748B !important;
+
+    transition:.25s !important;
+
+}
+
+.menu li a:hover{
+
+    background:#EEF5FF !important;
+
+    color:#2563EB !important;
+
+}
+
+.menu li.active a{
+
+    background:#DCEEFF !important;
+
+    color:#2563EB !important;
+
+    font-weight:600 !important;
+
+}
+
+.menu li i{
+
+    width:20px !important;
+
+    text-align:center !important;
+
+}
+
+.menu li:hover{
+
+    background:#EEF5FF !important;
+
+    color:#2563EB !important;
+
+}
+
+.menu li.active{
+
+    background:#DBEAFE !important;
+
+    color:#2563EB !important;
+
+    font-weight:600 !important;
+
+}
+
+div .container py-4{
+    padding: 0px 12px !important;
+}

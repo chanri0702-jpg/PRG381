@@ -4,6 +4,11 @@
 <%@ page import="za.bc.cleaninginventory.model.entity.Issuance" %>
 <%@ page import="za.bc.cleaninginventory.model.dto.ProductStockDTO" %>
 <%
+    request.setAttribute("pageTitle", "Stock Issuance");
+    request.setAttribute("activePage","issuance");
+%>
+
+<%
     List<Cleaner> cleaners = (List<Cleaner>) request.getAttribute("cleaners");
     List<ProductStockDTO> availableStock = (List<ProductStockDTO>) request.getAttribute("availableStock");
     List<Issuance> issuanceHistory = (List<Issuance>) request.getAttribute("issuanceHistory");
@@ -26,17 +31,15 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
+    
      <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/issuance.css">
 
 </head>
 
 <body>
-<div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Stock Issuance</h2>
-    </div>
+
     <div class="parent-container">
 
         <%@ include file="../components/sidebar.jsp" %>
@@ -48,7 +51,7 @@
             <div class="dashboard-content">
             
               
-<div class="container py-4">
+<div >
 
     <% if (successMessage != null) { %>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -69,8 +72,8 @@
 
 
     <div class="card mb-4">
-        <div class="card-header bg-dark text-white">
-            Issue Stock
+        <div class="card-header bg-white text-dark">
+            <h4> Issue Stock </h4>
         </div>
         <div class="card-body">
             <%
@@ -130,12 +133,12 @@
     </div>
 
     <div class="card">
-        <div class="card-header bg-dark text-white">
-            Issuance History
+        <div class="card-header card-header bg-white text-dark">
+            <h4> Issuance History </h4>
         </div>
         <div class="card-body p-0">
-            <table class="table table-striped mb-0 align-middle">
-                <thead class="table-light">
+            <table class="table  mb-0 align-middle">
+                <thead>
                     <tr>
                         <th>#</th>
                         <th>Cleaner</th>
@@ -172,7 +175,6 @@
     </div>
 
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     var prodSelect = document.getElementById('prodSelect');
     var quantityInput = document.getElementById('quantityInput');
@@ -187,5 +189,6 @@
         });
     }
 </script>
+</main>
 </body>
 </html>

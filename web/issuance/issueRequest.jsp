@@ -8,6 +8,11 @@
 <%@ page import="java.util.List" %>
 <%@ page import="za.bc.cleaninginventory.model.entity.Product" %>
 <%@ page import="za.bc.cleaninginventory.model.entity.Request" %>
+
+<%
+    request.setAttribute("pageTitle", "Stock Requests");
+    request.setAttribute("activePage","request");
+%>
 <%
     List<Product> products = (List<Product>) request.getAttribute("products");
     List<Request> myRequests = (List<Request>) request.getAttribute("myRequests");
@@ -33,10 +38,9 @@
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
 
-    <!-- CSS -->
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/dashboard.css">
-     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
+     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/issuance.css">
 
 </head>
 
@@ -53,11 +57,9 @@
             <div class="dashboard-content">
             
               
-<div class="container py-4">
+<div >
 
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">Stock Requests</h2>
-    </div>
+    
 
     <% if (successMessage != null) { %>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -72,9 +74,13 @@
         </div>
     <% } %>
 
+    <p class="text-muted small">
+        Request stock from supervisor.
+    </p>
     <div class="card mb-4">
-        <div class="card-header bg-dark text-white">
-            <%= isEditing ? "Edit Request #" + editingRequest.getId() : "New Stock Request" %>
+        <div class="card-header bg-white text-dark">
+            <h4><%= isEditing ? "Edit Request #" + editingRequest.getId() : "New Stock Request" %> </h4>
+            
         </div>
         <div class="card-body">
             <form method="post" action="request" class="row g-3">
@@ -145,12 +151,13 @@
     </div>
 
     <div class="card">
-        <div class="card-header bg-dark text-white">
-            My Requests
+        <div class="card-header bg-white text-dark">
+            <h4>My Requests </h4>
+            
         </div>
         <div class="card-body p-0">
             <table class="table table-hover mb-0 align-middle">
-                <thead class="table-light">
+                <thead class="">
                     <tr>
                         <th>Req #</th>
                         <th>Product</th>
@@ -218,6 +225,6 @@
     </div>
 
 </div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+        </main>
 </body>
 </html>
