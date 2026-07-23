@@ -32,7 +32,7 @@ public class DashboardDAO {
                     getCount(conn, "SELECT COUNT(*) FROM requests WHERE status='PENDING'"));
 
             dashboard.setLowStockProducts(
-                    getCount(conn, "SELECT COUNT(*) FROM product_stock WHERE stock < 10"));
+                    getCount(conn, "SELECT COUNT(*) FROM product_stock WHERE stock < %s".formatted(LOW_STOCK_THRESHOLD)));
 
             dashboard.setLowStockList(
                     getLowStockProducts(conn));

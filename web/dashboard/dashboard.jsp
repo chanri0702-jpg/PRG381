@@ -19,6 +19,7 @@
     <meta charset="UTF-8">
 
     <title>Dashboard | Cleaning Inventory & Issuance System</title>
+    <link rel="icon" type="image/png" href="${pageContext.request.contextPath}/assets/cims_logo.png">
 
     <!-- Google Font -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -43,340 +44,351 @@
 
             <%@ include file="../components/topbar.jsp" %>
             
-            <div class="page-header">
+            <div class="dashboard-content">
+            
+                <div class="page-header">
 
-                <div class="page-header-text">
+                    <div class="page-header-text">
 
-                    <p>Inventory summaries, issuance by cleaner, supplier activity, and low-stock reports.</p>
+                        <p>Inventory summaries, issuance by cleaner, supplier activity, and low-stock reports.</p>
 
-                </div> 
-            </div>
+                    </div> 
+                </div>
 
-            <section class="cards">
+                <section class="cards">
 
-                <div class="card">
+                    <div class="card">
 
-                    <div class="card-icon">
-                        <i class="fas fa-boxes-stacked"></i>
-                    </div>
+                        <div class="card-icon">
+                            <i class="fas fa-boxes-stacked"></i>
+                        </div>
 
-                    <div class="card-info">
+                        <div class="card-info">
 
-                        <h3>Products</h3>
+                            <h3>Products</h3>
 
-                        <p>${dashboard.totalProducts}</p>
+                            <p>${dashboard.totalProducts}</p>
 
-                        <div class="card-subtitle">
-                            ${dashboard.lowStockProducts} below reorder level
+                            <div class="card-subtitle">
+                                ${dashboard.lowStockProducts} below reorder level
+                            </div>
+
                         </div>
 
                     </div>
 
-                </div>
 
+                    <div class="card">
 
-                <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
 
-                    <div class="card-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
+                        <div class="card-info">
 
-                    <div class="card-info">
+                            <h3>Employees</h3>
 
-                        <h3>Employees</h3>
+                            <p>${dashboard.totalEmployees}</p>
 
-                        <p>${dashboard.totalEmployees}</p>
+                            <div class="card-subtitle">
+                                Storekeepers & Supervisors
+                            </div>
 
-                        <div class="card-subtitle">
-                            Storekeepers & Supervisors
                         </div>
 
                     </div>
 
-                </div>
 
+                    <div class="card">
 
-                <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-truck"></i>
+                        </div>
 
-                    <div class="card-icon">
-                        <i class="fas fa-truck"></i>
-                    </div>
+                        <div class="card-info">
 
-                    <div class="card-info">
+                            <h3>Suppliers</h3>
 
-                        <h3>Suppliers</h3>
+                            <p>${dashboard.totalSuppliers}</p>
 
-                        <p>${dashboard.totalSuppliers}</p>
+                            <div class="card-subtitle">
+                                Active suppliers
+                            </div>
 
-                        <div class="card-subtitle">
-                            Active suppliers
                         </div>
 
                     </div>
 
-                </div>
 
+                    <div class="card">
 
-                <div class="card">
+                        <div class="card-icon">
+                            <i class="fas fa-file-circle-check"></i>
+                        </div>
 
-                    <div class="card-icon">
-                        <i class="fas fa-file-circle-check"></i>
-                    </div>
+                        <div class="card-info">
 
-                    <div class="card-info">
+                            <h3>Pending Requests</h3>
 
-                        <h3>Pending Requests</h3>
+                            <p>${dashboard.pendingRequests}</p>
 
-                        <p>${dashboard.pendingRequests}</p>
+                            <div class="card-subtitle">
+                                Awaiting approval
+                            </div>
 
-                        <div class="card-subtitle">
-                            Awaiting approval
                         </div>
 
                     </div>
 
-                </div>
-
-            </section>
+                </section>
 
 
 
-            <!-- ======================================
-                        TABLES
-            ======================================= -->
+                <!-- ======================================
+                            TABLES
+                ======================================= -->
 
-            <section class="table-section">
+                <section class="table-section">
 
 
-                <!-- LOW STOCK -->
+                    <!-- LOW STOCK -->
 
-                <div class="table-card">
+                    <div class="table-card">
 
-                    <h2>Low Stock Alerts</h2>
+                        <h2>Low Stock Alerts</h2>
+                        
+                        <div class="table-wrapper">
 
-                    <table>
+                            <table>
 
-                        <thead>
+                                <thead>
 
-                        <tr>
+                                <tr>
 
-                            <th>Product</th>
+                                    <th>Product</th>
 
-                            <th>Stock</th>
+                                    <th>Stock</th>
 
-                        </tr>
+                                </tr>
 
-                        </thead>
+                                </thead>
 
-                        <tbody>
-
-                            <%
-                                DashboardDTO dashboard = (DashboardDTO) request.getAttribute("dashboard");
-
-                                List<LowStockDTO> lowStockProducts = dashboard.getLowStockList();
-
-                                if (lowStockProducts != null && !lowStockProducts.isEmpty()) {
-
-                                    for (LowStockDTO product : lowStockProducts) {
-                            %>
-
-                            <tr>
-
-                                <td><%= product.getProductName() %></td>
-
-                                <td>
+                                <tbody>
 
                                     <%
-                                        String stockBadge;
+                                        DashboardDTO dashboard = (DashboardDTO) request.getAttribute("dashboard");
 
-                                        if (product.getStock() <= 2) {
-                                            stockBadge = "badge-danger";
+                                        List<LowStockDTO> lowStockProducts = dashboard.getLowStockList();
+
+                                        if (lowStockProducts != null && !lowStockProducts.isEmpty()) {
+
+                                            for (LowStockDTO product : lowStockProducts) {
+                                    %>
+
+                                    <tr>
+
+                                        <td><%= product.getProductName() %></td>
+
+                                        <td>
+
+                                            <%
+                                                String stockBadge;
+
+                                                if (product.getStock() <= 2) {
+                                                    stockBadge = "badge-danger";
+                                                } else {
+                                                    stockBadge = "badge-warning";
+                                                }
+                                            %>
+
+                                            <span class="badge <%= stockBadge %>">
+                                                <%= product.getStock() %> Left
+                                            </span>
+
+                                        </td>
+
+                                    </tr>
+
+                                    <%
+                                            }
+
                                         } else {
-                                            stockBadge = "badge-warning";
-                                        }
                                     %>
 
-                                    <span class="badge <%= stockBadge %>">
-                                        <%= product.getStock() %> Left
-                                    </span>
+                                    <tr>
 
-                                </td>
+                                        <td colspan="3" class="text-center">
 
-                            </tr>
+                                            No low stock products found.
 
-                            <%
-                                    }
+                                        </td>
 
-                                } else {
-                            %>
-
-                            <tr>
-
-                                <td colspan="3" class="text-center">
-
-                                    No low stock products found.
-
-                                </td>
-
-                            </tr>
-
-                            <%
-                                }
-                            %>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-
-
-                <!-- RECENT REQUESTS -->
-
-                <div class="table-card">
-
-                    <h2>Recent Requests</h2>
-
-                    <table>
-
-                        <thead>
-
-                        <tr>
-
-                            <th>Employee</th>
-
-                            <th>Product</th>
-
-                            <th>Quantity</th>
-
-                            <th>Status</th>
-
-                            <th>Priority</th>
-
-                        </tr>
-
-                        </thead>
-
-                        <tbody>
-
-                            <%
-                                List<RecentRequestDTO> recentRequests = dashboard.getRecentRequests();
-
-                                if (recentRequests != null && !recentRequests.isEmpty()) {
-
-                                    for (RecentRequestDTO req : recentRequests) {
-                            %>
-
-                            <tr>
-
-                                <td><%= req.getEmployee() %></td>
-
-                                <td><%= req.getProduct() %></td>
-
-                                <td><%= req.getQuantity() %></td>
-
-                                <td>
+                                    </tr>
 
                                     <%
-                                        String statusBadge;
-
-                                        switch(req.getStatus().toUpperCase()){
-
-                                            case "PENDING":
-                                                statusBadge = "badge-warning";
-                                                break;
-
-                                            case "APPROVED":
-                                                statusBadge = "badge-info";
-                                                break;
-
-                                            case "ISSUED":
-                                                statusBadge = "badge-success";
-                                                break;
-
-                                            case "REJECTED":
-                                                statusBadge = "badge-danger";
-                                                break;
-
-                                            default:
-                                                statusBadge = "badge-secondary";
                                         }
                                     %>
 
-                                    <span class="badge <%= statusBadge %>">
+                                </tbody>
 
-                                        <%= req.getStatus() %>
+                            </table>
+                        </div>
 
-                                    </span>
+                    </div>
 
-                                </td>
+
+
+                    <!-- RECENT REQUESTS -->
+
+                    <div class="table-card">
+
+                        <h2>Recent Requests</h2>
+                        
+                        <div class="table-wrapper">
+
+                            <table>
+
+                                <thead>
+
+                                <tr>
+
+                                    <th>Employee</th>
+
+                                    <th>Product</th>
+
+                                    <th>Quantity</th>
+
+                                    <th>Status</th>
+
+                                    <th>Priority</th>
+
+                                </tr>
+
+                                </thead>
+
+                                <tbody>
+
+                                    <%
+                                        List<RecentRequestDTO> recentRequests = dashboard.getRecentRequests();
+
+                                        if (recentRequests != null && !recentRequests.isEmpty()) {
+
+                                            for (RecentRequestDTO req : recentRequests) {
+                                    %>
+
+                                    <tr>
+
+                                        <td><%= req.getEmployee() %></td>
+
+                                        <td><%= req.getProduct() %></td>
+
+                                        <td><%= req.getQuantity() %></td>
+
+                                        <td>
+
+                                            <%
+                                                String statusBadge;
+
+                                                switch(req.getStatus().toUpperCase()){
+
+                                                    case "PENDING":
+                                                        statusBadge = "badge-warning";
+                                                        break;
+
+                                                    case "APPROVED":
+                                                        statusBadge = "badge-info";
+                                                        break;
+
+                                                    case "ISSUED":
+                                                        statusBadge = "badge-success";
+                                                        break;
+
+                                                    case "REJECTED":
+                                                        statusBadge = "badge-danger";
+                                                        break;
+
+                                                    default:
+                                                        statusBadge = "badge-secondary";
+                                                }
+                                            %>
+
+                                            <span class="badge <%= statusBadge %>">
+
+                                                <%= req.getStatus() %>
+
+                                            </span>
+
+                                        </td>
+
+                                        <td>
+
+                                            <%
+                                                String priorityBadge;
+
+                                                switch(req.getPriority().toUpperCase()){
+
+                                                    case "LOW":
+                                                        priorityBadge = "badge-success";
+                                                        break;
+
+                                                    case "NORMAL":
+                                                        priorityBadge = "badge-info";
+                                                        break;
+
+                                                    case "HIGH":
+                                                        priorityBadge = "badge-warning";
+                                                        break;
+
+                                                    case "URGENT":
+                                                        priorityBadge = "badge-danger";
+                                                        break;
+
+                                                    default:
+                                                        priorityBadge = "badge-secondary";
+                                                }
+                                            %>
+
+                                            <span class="badge <%= priorityBadge %>">
+
+                                                <%= req.getPriority() %>
+
+                                            </span>
+
+                                        </td>
+
+                                    </tr>
+
+                                    <%
+                                            }
+
+                                        } else {
+                                    %>
+
+                                    <tr>
+
+                                        <td colspan="5" class="text-center">
+
+                                            No recent requests found.
+
+                                        </td>
+
+                                    </tr>
+
+                                    <%
+                                        }
+                                    %>
+
+                                </tbody>
+
+                            </table>
+                                    
+                        </div>
+
+                    </div>
+
+                </section>
                                 
-                                <td>
-
-                                    <%
-                                        String priorityBadge;
-
-                                        switch(req.getPriority().toUpperCase()){
-
-                                            case "LOW":
-                                                priorityBadge = "badge-success";
-                                                break;
-
-                                            case "NORMAL":
-                                                priorityBadge = "badge-info";
-                                                break;
-
-                                            case "HIGH":
-                                                priorityBadge = "badge-warning";
-                                                break;
-
-                                            case "URGENT":
-                                                priorityBadge = "badge-danger";
-                                                break;
-
-                                            default:
-                                                priorityBadge = "badge-secondary";
-                                        }
-                                    %>
-
-                                    <span class="badge <%= priorityBadge %>">
-
-                                        <%= req.getPriority() %>
-
-                                    </span>
-
-                                </td>
-
-                            </tr>
-
-                            <%
-                                    }
-
-                                } else {
-                            %>
-
-                            <tr>
-
-                                <td colspan="5" class="text-center">
-
-                                    No recent requests found.
-
-                                </td>
-
-                            </tr>
-
-                            <%
-                                }
-                            %>
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            </section>
+            </div>
 
         </main>
 

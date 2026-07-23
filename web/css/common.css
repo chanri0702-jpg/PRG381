@@ -104,7 +104,9 @@ body{
 
     display:flex;
 
-    min-height:100vh;
+    height:100vh;
+
+    overflow:hidden;
 
     background:var(--background-color);
 
@@ -119,9 +121,13 @@ body{
 
     flex:1;
 
-    padding:35px 70px;
+    display:flex;
 
-    overflow-y:auto;
+    flex-direction:column;
+
+    overflow:hidden;
+
+    padding:35px 70px;
 
 }
 

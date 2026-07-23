@@ -27,6 +27,7 @@ public class ConnectionPool {
         config.setConnectionTimeout(10000);
         config.setIdleTimeout(60000);
         config.setMaxLifetime(300000);
+
         // Optional (helps identify your app in PostgreSQL)
         config.setPoolName("CleaningInventoryPool");
         config.setAutoCommit(true);

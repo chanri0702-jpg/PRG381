@@ -1,23 +1,39 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package za.bc.cleaninginventory.model.entity;
 
-/**
- *
- * @author BC-STUDENT
- */
 public class Cleaner {
+
     private int cleanerId;
     private String name;
     private String surname;
     private String phone;
     private String email;
-    private int campId;
+  private int campId;
+
+    private int campusId;
+    private String campusName;
+
 
     public Cleaner() {
     }
+
+    public Cleaner(
+            int cleanerId,
+            String name,
+            String surname,
+            String phone,
+            String email,
+            int campusId,
+            String campusName
+    ) {
+        this.cleanerId = cleanerId;
+        this.name = name;
+        this.surname = surname;
+        this.phone = phone;
+        this.email = email;
+        this.campusId = campusId;
+        this.campusName = campusName;
+    }
+
 
     public int getCleanerId() {
         return cleanerId;
@@ -59,15 +75,25 @@ public class Cleaner {
         this.email = email;
     }
 
-    public int getCampId() {
-        return campId;
+    public int getCampusId() {
+        return campusId;
     }
 
-    public void setCampId(int campId) {
-        this.campId = campId;
+    public void setCampusId(int campusId) {
+        this.campusId = campusId;
+    }
+
+    public String getCampusName() {
+        return campusName;
+    }
+
+    public void setCampusName(String campusName) {
+        this.campusName = campusName;
     }
 
     public String getFullName() {
-        return name + " " + surname;
+        return (name == null ? "" : name)
+                + " "
+                + (surname == null ? "" : surname);
     }
 }
