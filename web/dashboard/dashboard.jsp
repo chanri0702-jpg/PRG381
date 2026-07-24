@@ -46,6 +46,13 @@
             
             <div class="dashboard-content">
             
+                <% if (request.getAttribute("error") != null) { %>
+                    <div class="alert-error-banner" style="background: #FEE2E2; color: #B91C1C; border: 1px solid #FECACA; padding: 15px; border-radius: 12px; margin-bottom: 20px; font-size: 14px; display: flex; align-items: center; gap: 10px; font-weight: 500; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);">
+                        <i class="fas fa-circle-exclamation" style="font-size: 16px;"></i>
+                        <span><%= request.getAttribute("error") %></span>
+                    </div>
+                <% } %>
+            
                 <div class="page-header">
 
                     <div class="page-header-text">

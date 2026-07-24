@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import za.bc.cleaninginventory.service.report.PdfExportService;
 
 import java.io.IOException;
+import za.bc.cleaninginventory.model.entity.Employee;
 
 @WebServlet("/exportPdf")
 public class ExportPdfServlet extends HttpServlet {
@@ -19,6 +20,8 @@ public class ExportPdfServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,
             HttpServletResponse response)
             throws ServletException, IOException {
+        
+        Employee currentUser = (Employee) request.getSession().getAttribute("currentUser");
 
         String reportType = request.getParameter("type");
 
@@ -37,7 +40,8 @@ public class ExportPdfServlet extends HttpServlet {
             pdfService.exportReport(
                     reportType,
                     response.getOutputStream(),
-                    getServletContext());
+                    getServletContext(),
+                    currentUser);
 
         } catch (Exception ex) {
 

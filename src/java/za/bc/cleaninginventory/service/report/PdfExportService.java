@@ -22,16 +22,16 @@ import java.util.List;
 import za.bc.cleaninginventory.model.dto.ReportDTO;
 
 import jakarta.servlet.ServletContext;
+import za.bc.cleaninginventory.model.entity.Employee;
 
 public class PdfExportService {
 
-    private final String USER_NAME = "Anele Nkayi";
-    private final String USER_ROLE = "Storekeeper";
     private final ReportDAO reportDAO = new ReportDAO();
 
     public void exportReport(String reportType,
             OutputStream outputStream,
-            ServletContext context) throws Exception {
+            ServletContext context,
+            Employee currentUser) throws Exception {
 
         PdfWriter writer = new PdfWriter(outputStream);
         PdfDocument pdf = new PdfDocument(writer);
@@ -57,7 +57,7 @@ public class PdfExportService {
 
         addHeader(document, context);
 
-        addTitle(document, properties, reportType);
+        addTitle(document, properties, reportType, currentUser.getName(), currentUser.getSurname());
 
         String tableHtml = buildTableHtml(reportType);
 
@@ -70,7 +70,7 @@ public class PdfExportService {
 
         }
 
-        addSignature(document);
+        addSignature(document, currentUser.getName(), currentUser.getSurname(), currentUser.getRole());
 
         document.close();
 
@@ -94,7 +94,8 @@ public class PdfExportService {
 
     private void addTitle(Document document,
             ConverterProperties properties,
-            String reportType) throws Exception {
+            String reportType,
+            String name, String surname) throws Exception {
 
         String title
                 = reportType.substring(0, 1).toUpperCase()
@@ -112,7 +113,7 @@ public class PdfExportService {
                 + "</h1>"
                 + "<p style='font-family:\"Google Sans\",sans-serif;"
                 + "font-size:10pt;'>"
-                + "Prepared by: " + USER_NAME
+                + "Prepared by: " + name + " " + surname
                 + "<br>Date: "
                 + today
                 + "</p>";
@@ -151,7 +152,8 @@ public class PdfExportService {
 
     }
 
-    private void addSignature(Document document) throws Exception {
+    private void addSignature(Document document,
+            String name, String surname, String role) throws Exception {
 
         Table table
                 = new Table(UnitValue.createPercentArray(new float[]{100}))
@@ -180,7 +182,7 @@ public class PdfExportService {
                         .setMarginBottom(8);
 
         Paragraph text
-                = new Paragraph(USER_NAME + "\n" + USER_ROLE)
+                = new Paragraph(name + " " + surname + "\n" + role)
                         .setTextAlignment(TextAlignment.CENTER)
                         .setFontSize(8.5f);
 
