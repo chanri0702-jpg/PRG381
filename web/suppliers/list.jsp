@@ -17,6 +17,9 @@
 
     String queryError
             = request.getParameter("error");
+            
+    za.bc.cleaninginventory.model.entity.Employee listUser = (za.bc.cleaninginventory.model.entity.Employee) session.getAttribute("currentUser");
+    String userRole = (listUser != null) ? listUser.getRole() : "";
 %>
 
 <!DOCTYPE html>
@@ -60,6 +63,7 @@
                         </p>
                     </div>
 
+                    <% if ("SUPERVISOR".equalsIgnoreCase(userRole)) { %>
                     <div class="page-actions">
                         <a class="btn btn-primary"
                            href="<%= request.getContextPath()%>/suppliers?action=add">
@@ -68,6 +72,7 @@
                             Add Supplier
                         </a>
                     </div>
+                    <% } %>
 
                 </div>
 
@@ -146,12 +151,14 @@
                                                 vendor and contact information.
                                             </p>
 
+                                            <% if ("SUPERVISOR".equalsIgnoreCase(userRole)) { %>
                                             <a class="btn btn-primary"
                                                href="<%= request.getContextPath()%>/suppliers?action=add">
 
                                                 <i class="fas fa-plus"></i>
                                                 Add Supplier
                                             </a>
+                                            <% } %>
 
                                         </div>
 
@@ -241,6 +248,7 @@
                                                 <i class="fas fa-eye"></i>
                                             </a>
 
+                                            <% if ("SUPERVISOR".equalsIgnoreCase(userRole)) { %>
                                             <a class="icon-btn edit-action"
                                                title="Edit supplier"
                                                href="<%= request.getContextPath()%>/suppliers?action=edit&id=<%= supplier.getBusinessId()%>">
@@ -264,6 +272,7 @@
                                                 </button>
 
                                             </form>
+                                            <% } %>
 
                                         </div>
 

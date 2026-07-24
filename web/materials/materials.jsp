@@ -240,11 +240,13 @@
                             <h1>Materials Management</h1>
                             <p>Manage various items including cleaning stock, categories, reorder levels, search, filtering, and low-stock status.</p>
                         </div>
+                        <c:if test="${currentUser.role == 'STOREKEEPER'}">
                         <div class="page-actions">
                             <a href="${pageContext.request.contextPath}/materials?action=add" class="btn btn-primary">
                                 <i class="fas fa-plus"></i> Add New Material
                             </a>
                         </div>
+                        </c:if>
                     </div>
                     
                     <!-- Statistics Cards -->
@@ -405,18 +407,20 @@
                                                                class="btn btn-primary" style="padding: 5px 12px; font-size: 13px;">
                                                                 <i class="fas fa-eye"></i>
                                                             </a>
-                                                            <a href="${pageContext.request.contextPath}/materials?action=edit&id=${material.prodId}" 
-                                                               class="btn btn-success" style="padding: 5px 12px; font-size: 13px;">
-                                                                <i class="fas fa-edit"></i>
-                                                            </a>
-                                                            <form action="${pageContext.request.contextPath}/materials" method="post" style="display: inline;">
-                                                                <input type="hidden" name="action" value="delete">
-                                                                <input type="hidden" name="prodId" value="${material.prodId}">
-                                                                <button type="submit" class="btn btn-danger" style="padding: 5px 12px; font-size: 13px;" 
-                                                                        onclick="return confirm('Are you sure you want to delete ${material.name}?')">
-                                                                    <i class="fas fa-trash"></i>
-                                                                </button>
-                                                            </form>
+                                                            <c:if test="${currentUser.role == 'STOREKEEPER'}">
+                                                                <a href="${pageContext.request.contextPath}/materials?action=edit&id=${material.prodId}" 
+                                                                   class="btn btn-success" style="padding: 5px 12px; font-size: 13px;">
+                                                                    <i class="fas fa-edit"></i>
+                                                                </a>
+                                                                <form action="${pageContext.request.contextPath}/materials" method="post" style="display: inline;">
+                                                                    <input type="hidden" name="action" value="delete">
+                                                                    <input type="hidden" name="prodId" value="${material.prodId}">
+                                                                    <button type="submit" class="btn btn-danger" style="padding: 5px 12px; font-size: 13px;" 
+                                                                            onclick="return confirm('Are you sure you want to delete ${material.name}?')">
+                                                                        <i class="fas fa-trash"></i>
+                                                                    </button>
+                                                                </form>
+                                                            </c:if>
                                                         </div>
                                                     </td>
                                                 </tr>

@@ -6,6 +6,8 @@
 <%
     request.setAttribute("pageTitle", "Stock Issuance");
     request.setAttribute("activePage","issuance");
+    za.bc.cleaninginventory.model.entity.Employee currentUser = (za.bc.cleaninginventory.model.entity.Employee) session.getAttribute("currentUser");
+    String userRole = (currentUser != null) ? currentUser.getRole() : "";
 %>
 
 <%
@@ -59,10 +61,12 @@
                     <span>Stock Requests</span>
                 </a>
            
+                <% if ("SUPERVISOR".equalsIgnoreCase(userRole)) { %>
                 <a href="${pageContext.request.contextPath}/orders" class="<%= "orders".equals(request.getAttribute("activePage")) ? "active" : "" %>">
                   
                     <span>Stock Orders</span>
                 </a>
+                <% } %>
 
     </section>
 

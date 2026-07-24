@@ -56,6 +56,25 @@ public class AuthenticationFilter implements Filter {
 
         String role = (String) session.getAttribute("userRole");
 
+        // Role-Based Access Control (RBAC)
+        if (path.startsWith("/orders") && !"SUPERVISOR".equalsIgnoreCase(role)) {
+            httpRequest.setAttribute("error", "Access Denied: Only Supervisors are allowed to view purchase orders and approvals.");
+            httpRequest.getRequestDispatcher("/dashboard").forward(httpRequest, httpResponse);
+            return;
+        }
+        
+        if (path.startsWith("/reports") && !"SUPERVISOR".equalsIgnoreCase(role)) {
+            httpRequest.setAttribute("error", "Access Denied: Only Supervisors are allowed to view reports.");
+            httpRequest.getRequestDispatcher("/dashboard").forward(httpRequest, httpResponse);
+            return;
+        }
+        
+        if (path.startsWith("/issuance") && !"STOREKEEPER".equalsIgnoreCase(role)) {
+            httpRequest.setAttribute("error", "Access Denied: Only Storekeepers are allowed to perform physical stock issuances.");
+            httpRequest.getRequestDispatcher("/dashboard").forward(httpRequest, httpResponse);
+            return;
+        }
+
         // User is authenticated and authorized, proceed
         chain.doFilter(request, response);
     }

@@ -9,8 +9,10 @@ import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
+import jakarta.servlet.http.HttpSession;
 import za.bc.cleaninginventory.model.dao.material.MaterialDAO;
 import za.bc.cleaninginventory.model.entity.Material;
+import za.bc.cleaninginventory.model.entity.Employee;
 import za.bc.cleaninginventory.service.material.MaterialService;
 
 @WebServlet(name = "MaterialServlet", urlPatterns ={"/materials"})
@@ -34,6 +36,17 @@ public class MaterialServlet extends HttpServlet{
 
         if (action == null || action.isBlank()){
             action = "list";
+        }
+
+        // Restrict add/edit views to Storekeeper only
+        if ("add".equals(action) || "edit".equals(action)) {
+            HttpSession session = request.getSession(false);
+            Employee currentUser = (Employee) (session != null ? session.getAttribute("currentUser") : null);
+            String role = (currentUser != null) ? currentUser.getRole() : null;
+            if (!"STOREKEEPER".equalsIgnoreCase(role)) {
+                response.sendRedirect(request.getContextPath() + "/materials");
+                return;
+            }
         }
 
         System.out.println("=== MaterialServlet.doGet() ===");
@@ -83,6 +96,15 @@ public class MaterialServlet extends HttpServlet{
     ) throws ServletException, IOException{
 
         request.setCharacterEncoding("UTF-8");
+
+        HttpSession session = request.getSession(false);
+        Employee currentUser = (Employee) (session != null ? session.getAttribute("currentUser") : null);
+        String role = (currentUser != null) ? currentUser.getRole() : null;
+
+        if (!"STOREKEEPER".equalsIgnoreCase(role)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied: Only Storekeepers are allowed to create, update or delete materials.");
+            return;
+        }
 
         String action = request.getParameter("action");
 

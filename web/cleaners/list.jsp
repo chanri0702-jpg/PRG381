@@ -24,6 +24,9 @@
     String queryError =
             request.getParameter("error");
 
+    za.bc.cleaninginventory.model.entity.Employee listUser = (za.bc.cleaninginventory.model.entity.Employee) session.getAttribute("currentUser");
+    String userRole = (listUser != null) ? listUser.getRole() : "";
+
     Set<Integer> representedCampuses = new HashSet<>();
 
     if (cleaners != null) {
@@ -74,6 +77,7 @@
                 </p>
             </div>
 
+            <% if ("SUPERVISOR".equalsIgnoreCase(userRole)) { %>
             <div class="page-actions">
                 <a class="btn btn-primary"
                    href="<%= request.getContextPath() %>/cleaners?action=add">
@@ -82,6 +86,7 @@
                     Add Cleaner
                 </a>
             </div>
+            <% } %>
 
         </div>
 
@@ -225,12 +230,14 @@
                                         the campus cleaner roster.
                                     </p>
 
+                                    <% if ("SUPERVISOR".equalsIgnoreCase(userRole)) { %>
                                     <a class="btn btn-primary"
                                        href="<%= request.getContextPath() %>/cleaners?action=add">
 
                                         <i class="fas fa-user-plus"></i>
                                         Add Cleaner
                                     </a>
+                                    <% } %>
 
                                 </div>
 
@@ -322,29 +329,31 @@
                                             <i class="fas fa-eye"></i>
                                         </a>
 
-                                        <a class="icon-btn edit-action"
-                                           title="Edit cleaner"
-                                           href="<%= request.getContextPath() %>/cleaners?action=edit&id=<%= cleaner.getCleanerId() %>">
+                                         <% if ("SUPERVISOR".equalsIgnoreCase(userRole)) { %>
+                                         <a class="icon-btn edit-action"
+                                            title="Edit cleaner"
+                                            href="<%= request.getContextPath() %>/cleaners?action=edit&id=<%= cleaner.getCleanerId() %>">
 
-                                            <i class="fas fa-pen"></i>
-                                        </a>
+                                             <i class="fas fa-pen"></i>
+                                         </a>
 
-                                        <form method="post"
-                                              action="<%= request.getContextPath() %>/cleaners?action=delete"
-                                              onsubmit="return confirm('Are you sure you want to delete this cleaner?');">
+                                         <form method="post"
+                                               action="<%= request.getContextPath() %>/cleaners?action=delete"
+                                               onsubmit="return confirm('Are you sure you want to delete this cleaner?');">
 
-                                            <input type="hidden"
-                                                   name="cleanerId"
-                                                   value="<%= cleaner.getCleanerId() %>">
+                                             <input type="hidden"
+                                                    name="cleanerId"
+                                                    value="<%= cleaner.getCleanerId() %>">
 
-                                            <button type="submit"
-                                                    class="icon-btn delete-action"
-                                                    title="Delete cleaner">
+                                             <button type="submit"
+                                                     class="icon-btn delete-action"
+                                                     title="Delete cleaner">
 
-                                                <i class="fas fa-trash"></i>
-                                            </button>
+                                                 <i class="fas fa-trash"></i>
+                                             </button>
 
-                                        </form>
+                                         </form>
+                                         <% } %>
 
                                     </div>
 

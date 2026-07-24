@@ -15,6 +15,18 @@
     </div>
 
 
+    <%
+        za.bc.cleaninginventory.model.entity.Employee sidebarUser = (za.bc.cleaninginventory.model.entity.Employee) session.getAttribute("currentUser");
+        String sidebarRole = (sidebarUser != null) ? sidebarUser.getRole() : "";
+        
+        String stockPath = request.getContextPath() + "/request";
+        if ("STOREKEEPER".equalsIgnoreCase(sidebarRole)) {
+            stockPath = request.getContextPath() + "/issuance";
+        } else if ("SUPERVISOR".equalsIgnoreCase(sidebarRole)) {
+            stockPath = request.getContextPath() + "/orders";
+        }
+    %>
+
     <!-- Navigation -->
 
     <nav>
@@ -50,19 +62,20 @@
             </li>
 
             <li class="<%= ("issuance".equals(request.getAttribute("activePage")) || "orders".equals(request.getAttribute("activePage")) || "request".equals(request.getAttribute("activePage"))) ? "active" : "" %>">
-                <a href="${pageContext.request.contextPath}/issuance">
+                <a href="<%= stockPath %>">
                     <i class="fas fa-hand-holding"></i>
                     <span>Stock</span>
                 </a>
             </li>
             
-
+            <% if ("SUPERVISOR".equalsIgnoreCase(sidebarRole)) { %>
             <li class="<%= "reports".equals(request.getAttribute("activePage")) ? "active" : "" %>">
                 <a href="${pageContext.request.contextPath}/reports">
                     <i class="fas fa-chart-column"></i>
                     <span>Reports</span>
                 </a>
             </li>
+            <% } %>
 
         </ul>
 

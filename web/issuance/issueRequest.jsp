@@ -12,6 +12,8 @@
 <%
     request.setAttribute("pageTitle", "Stock Requests");
     request.setAttribute("activePage","request");
+    za.bc.cleaninginventory.model.entity.Employee currentUser = (za.bc.cleaninginventory.model.entity.Employee) session.getAttribute("currentUser");
+    String userRole = (currentUser != null) ? currentUser.getRole() : "";
 %>
 <%
     List<Product> products = (List<Product>) request.getAttribute("products");
@@ -56,19 +58,23 @@
             <section class="stock-cards">
 
        
+                <% if ("STOREKEEPER".equalsIgnoreCase(userRole)) { %>
                 <a href="${pageContext.request.contextPath}/issuance" class="<%= "issuance".equals(request.getAttribute("activePage")) ? "active" : "" %>">
                     
                     <span>Stock Issuance</span>
                 </a>
+                <% } %>
                 <a href="${pageContext.request.contextPath}/request" class="<%= "request".equals(request.getAttribute("activePage")) ? "active" : "" %>">
                  
                     <span>Stock Requests</span>
                 </a>
            
+                <% if ("SUPERVISOR".equalsIgnoreCase(userRole)) { %>
                 <a href="${pageContext.request.contextPath}/orders" class="<%= "orders".equals(request.getAttribute("activePage")) ? "active" : "" %>">
                   
                     <span>Stock Orders</span>
                 </a>
+                <% } %>
 
     </section>
 

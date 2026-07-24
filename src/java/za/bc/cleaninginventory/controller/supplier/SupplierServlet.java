@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+import jakarta.servlet.http.HttpSession;
 import za.bc.cleaninginventory.model.entity.Supplier;
+import za.bc.cleaninginventory.model.entity.Employee;
 import za.bc.cleaninginventory.service.supplier.SupplierService;
 
 @WebServlet(name = "SupplierServlet", urlPatterns = {"/suppliers"})
@@ -33,6 +35,17 @@ public class SupplierServlet extends HttpServlet {
 
         if (action == null || action.isBlank()) {
             action = "list";
+        }
+
+        // Restrict add/edit views to Supervisor only
+        if ("add".equals(action) || "edit".equals(action)) {
+            HttpSession session = request.getSession(false);
+            Employee currentUser = (Employee) (session != null ? session.getAttribute("currentUser") : null);
+            String role = (currentUser != null) ? currentUser.getRole() : null;
+            if (!"SUPERVISOR".equalsIgnoreCase(role)) {
+                response.sendRedirect(request.getContextPath() + "/suppliers");
+                return;
+            }
         }
 
         try {
@@ -70,6 +83,15 @@ public class SupplierServlet extends HttpServlet {
     ) throws ServletException, IOException {
 
         request.setCharacterEncoding("UTF-8");
+
+        HttpSession session = request.getSession(false);
+        Employee currentUser = (Employee) (session != null ? session.getAttribute("currentUser") : null);
+        String role = (currentUser != null) ? currentUser.getRole() : null;
+
+        if (!"SUPERVISOR".equalsIgnoreCase(role)) {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "Access Denied: Only Supervisors are allowed to create, update or delete suppliers.");
+            return;
+        }
 
         String action = request.getParameter("action");
 
