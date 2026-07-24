@@ -210,24 +210,6 @@ git clone https://github.com/<YOUR_USERNAME>/CleaningInventorySystem.git
 
 ---
 
-## Database Setup
-
-Create a PostgreSQL database:
-
-```sql
-CREATE DATABASE CleaningInventoryDB;
-```
-
-Run the SQL script located in:
-
-```
-database/schema.sql
-```
-
-to create all required tables.
-
----
-
 ## Configure Database Connection
 
 Open:
