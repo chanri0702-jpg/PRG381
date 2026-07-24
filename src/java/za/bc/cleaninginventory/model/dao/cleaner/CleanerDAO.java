@@ -1,15 +1,20 @@
 package za.bc.cleaninginventory.model.dao.cleaner;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+
+import za.bc.cleaninginventory.database.ConnectionPool;
+import za.bc.cleaninginventory.model.entity.Cleaner;
+
+import java.sql.*;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
+
+/**
+ *
+ * @author BC-STUDENT
+ */
+import java.util.LinkedHashMap;
 import java.util.Map;
 import za.bc.cleaninginventory.database.DBConnection;
-import za.bc.cleaninginventory.model.entity.Cleaner;
 
 public class CleanerDAO {
 
@@ -273,12 +278,37 @@ public class CleanerDAO {
     private void setCleanerParameters(
             PreparedStatement statement,
             Cleaner cleaner
-    ) throws SQLException {
+            ) throws SQLException {
 
-        statement.setString(1, cleaner.getName());
-        statement.setString(2, cleaner.getSurname());
-        statement.setString(3, cleaner.getPhone());
-        statement.setString(4, cleaner.getEmail());
-        statement.setInt(5, cleaner.getCampusId());
-    }
+                statement.setString(1, cleaner.getName());
+                statement.setString(2, cleaner.getSurname());
+                statement.setString(3, cleaner.getPhone());
+                statement.setString(4, cleaner.getEmail());
+                statement.setInt(5, cleaner.getCampusId());
+
+            }
+    
+        
+ public List<Cleaner> getCleanersByCampus(int campId) throws SQLException {
+        List<Cleaner> cleaners = new ArrayList<>();
+        String sql = "SELECT cleaner_id, name, surname, phone, email, camp_id FROM cleaners "
+                + "WHERE camp_id = ? ORDER BY name, surname";
+        try (Connection conn = ConnectionPool.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, campId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Cleaner c = new Cleaner();
+                    c.setCleanerId(rs.getInt("cleaner_id"));
+                    c.setName(rs.getString("name"));
+                    c.setSurname(rs.getString("surname"));
+                    c.setPhone(rs.getString("phone"));
+                    c.setEmail(rs.getString("email"));
+                    c.setCampusId(rs.getInt("camp_id"));
+                    cleaners.add(c);
+                }
+            }
+        }
+        return cleaners;
+ }
 }

@@ -7,8 +7,11 @@ public class Cleaner {
     private String surname;
     private String phone;
     private String email;
+  private int campId;
+
     private int campusId;
     private String campusName;
+
 
     public Cleaner() {
     }
@@ -30,6 +33,7 @@ public class Cleaner {
         this.campusId = campusId;
         this.campusName = campusName;
     }
+
 
     public int getCleanerId() {
         return cleanerId;

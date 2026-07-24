@@ -15,7 +15,6 @@ nbproject/private/
 .DS_Store
 Thumbs.db
 
-
 # NetBeans generated files
 nbproject/build-impl.xml
 nbproject/genfiles.properties
@@ -23,4 +22,3 @@ nbproject/genfiles.properties
 # Project Guide
 GUIDE.md
 SOLID_AND_SECURITY.md
-

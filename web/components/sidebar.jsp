@@ -49,12 +49,13 @@
                 </a>
             </li>
 
-            <li class="<%= "issuance".equals(request.getAttribute("activePage")) ? "active" : "" %>">
+            <li class="<%= ("issuance".equals(request.getAttribute("activePage")) || "orders".equals(request.getAttribute("activePage")) || "request".equals(request.getAttribute("activePage"))) ? "active" : "" %>">
                 <a href="${pageContext.request.contextPath}/issuance">
                     <i class="fas fa-hand-holding"></i>
-                    <span>Stock Issuance</span>
+                    <span>Stock</span>
                 </a>
             </li>
+            
 
             <li class="<%= "reports".equals(request.getAttribute("activePage")) ? "active" : "" %>">
                 <a href="${pageContext.request.contextPath}/reports">
