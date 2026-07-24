@@ -4,13 +4,12 @@
  */
 package za.bc.cleaninginventory.model.dao.issuance;
 
-import za.bc.cleaninginventory.database.ConnectionPool;
-import za.bc.cleaninginventory.model.entity.Issuance;
-import za.bc.cleaninginventory.model.dto.ProductStockDTO;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import za.bc.cleaninginventory.database.ConnectionPool;
+import za.bc.cleaninginventory.model.dto.ProductStockDTO;
+import za.bc.cleaninginventory.model.entity.Issuance;
 
 /**
  *
@@ -89,7 +88,7 @@ public class IssuanceDAO {
         }
     }
 
-    public List<Issuance> getIssuanceHistory() throws SQLException {
+    public List<Issuance> getIssuanceHistory(int campId, int issuedByEmpId) throws SQLException {
         List<Issuance> history = new ArrayList<>();
         String sql = "SELECT i.issuance_id, i.cleaner_id, c.name AS cleaner_name, c.surname AS cleaner_surname, "
                 + "i.prod_id, p.name AS product_name, i.issued_by, e.name AS emp_name, e.surname AS emp_surname, "
@@ -98,11 +97,14 @@ public class IssuanceDAO {
                 + "JOIN cleaners c ON i.cleaner_id = c.cleaner_id "
                 + "JOIN products p ON i.prod_id = p.prod_id "
                 + "JOIN employees e ON i.issued_by = e.emp_id "
+                + "WHERE c.camp_id = ? AND i.issued_by = ? "
                 + "ORDER BY i.issue_date DESC";
 
         try (Connection conn = ConnectionPool.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, campId);
+            ps.setInt(2, issuedByEmpId);
+            try (ResultSet rs = ps.executeQuery()) {
 
             while (rs.next()) {
                 Issuance i = new Issuance();
@@ -118,7 +120,7 @@ public class IssuanceDAO {
                 history.add(i);
             }
         }
-        return history;
+        return history;}
     }
 
     public Integer getEmployeeCampId(int empId) throws SQLException {

@@ -51,7 +51,7 @@ public class IssuanceServlet extends HttpServlet {
 
             List<Cleaner> cleaners = (campId != null) ? cleanerDAO.getCleanersByCampus(campId) : new ArrayList<>();
             List<ProductStockDTO> availableStock = (campId != null) ? issuanceDAO.getProductStockForCampus(campId) : new ArrayList<>();
-            List<Issuance> issuanceHistory = issuanceDAO.getIssuanceHistory();
+            List<Issuance> issuanceHistory = (campId != null) ? issuanceDAO.getIssuanceHistory(campId, storekeeperEmpId) : new ArrayList<>();
 
             req.setAttribute("cleaners", cleaners);
             req.setAttribute("availableStock", availableStock);
