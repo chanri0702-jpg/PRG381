@@ -210,6 +210,21 @@ git clone https://github.com/<YOUR_USERNAME>/CleaningInventorySystem.git
 
 ---
 
+## Configure Required Libraries
+
+This project uses external JAR files that are included in the repository.
+
+The required JAR files can be found in:
+
+```text
+src/java/za/bc/cleaninginventory/required JAR files/
+```
+
+Before building the project, add **all** of these JAR files to your project's libraries.
+
+
+---
+
 ## Configure Database Connection
 
 Open:
