@@ -361,19 +361,48 @@ This project provided practical experience in:
 
 # 📷 Screenshots
 
-Add screenshots of the following pages:
-
 - Login
+<img width="1917" height="951" alt="image" src="https://github.com/user-attachments/assets/6a969515-1846-4ddf-92dc-ae4a2e05e571" />
+
+
 - Dashboard
+<img width="1910" height="946" alt="image" src="https://github.com/user-attachments/assets/13552caa-948c-411b-b2d4-6ce927f71daf" />
+
+
 - Materials
+<img width="1909" height="946" alt="image" src="https://github.com/user-attachments/assets/f1ed5da2-cbb3-4ee0-98d5-0c24447df967" />
+
+
 - Suppliers
+<img width="1906" height="950" alt="image" src="https://github.com/user-attachments/assets/e8999e2a-3aeb-44a9-802f-21b9e66b569d" />
+
+
 - Cleaners
-- Requests
-- Orders
+<img width="1910" height="948" alt="image" src="https://github.com/user-attachments/assets/04b790dc-5ce1-46e5-a4ba-5deb566baffe" />
+
+
 - Stock Issuance
+<img width="1909" height="945" alt="image" src="https://github.com/user-attachments/assets/5bfeab2c-dac6-4e18-becb-fe10c74df4e0" />
+
+
+- Stock Requests
+<img width="1912" height="948" alt="image" src="https://github.com/user-attachments/assets/43624ad5-c497-4b3d-bb4e-57c14b1c683a" />
+
+
+- Stock Orders
+<img width="1909" height="949" alt="image" src="https://github.com/user-attachments/assets/1f7e2f8f-b939-442b-8fb2-ed95d9fe5fbc" />
+
+
 - Reports
+<img width="1907" height="947" alt="image" src="https://github.com/user-attachments/assets/8fcfcb30-e09c-4a8e-8815-a77d55f1c2bc" />
+
+
 - PDF Export
+<img width="1916" height="1022" alt="image" src="https://github.com/user-attachments/assets/26c34ebf-cab1-4672-9936-7842fab6c38c" />
+
+
 - Excel Export
+<img width="1917" height="1030" alt="image" src="https://github.com/user-attachments/assets/7d878213-19b6-4c63-8057-b894fc3ebc67" />
 
 ---
 
